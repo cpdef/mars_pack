@@ -52,4 +52,7 @@ if marsair.pipeworks then
 	dofile(modfolder.."/air_item_disappear.lua")
 end
 
+--crafting recipes
+dofile(modfolder.."/craft.lua")
+
 print("[MOD] Marsair loaded!")

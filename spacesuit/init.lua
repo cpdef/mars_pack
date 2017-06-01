@@ -85,7 +85,7 @@ minetest.register_craftitem("spacesuit:air_gassbottle_empty", {
 minetest.register_craft({
 	output = "spacesuit:sp",
 	recipe = {
-		{"spacesuit:sp","marssurvive:air_gassbottle",""}
+		{"spacesuit:sp","spacesuit:air_gassbottle",""}
 
 	},
 })
@@ -106,14 +106,6 @@ minetest.register_craft({
 		{"","marssurvive:spred","",},
 		{"default:diamond", "default:diamondblock", "default:diamond",},
 		{"default:diamond", "default:diamondblock", "default:diamond"},
-
-	},
-})
-
-minetest.register_craft({
-	output = "spacesuit:sp",
-	recipe = {
-		{"marssurvive:sp","marssurvive:air_gassbottle",""}
 
 	},
 })
