@@ -7,7 +7,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "marsair:air_maker",
+	output = "marsair:airmaker",
 	recipe = {
 		{"marssurvive:shieldblock","marssurvive:shieldblock","marssurvive:shieldblock"},
 		{"marssurvive:shieldblock","marsair:airgen", "marssurvive:shieldblock"},
@@ -18,6 +18,6 @@ minetest.register_craft({
 	output = "marsair:tree_air_cleaner",
 	recipe = {
 		{"marssurvive:shieldblock","marssurvive:shieldblock","marssurvive:shieldblock"},
-		{"marssurvive:shieldblock","marsair:air_maker", "marssurvive:shieldblock"},
+		{"marssurvive:shieldblock","marsair:airmaker", "marssurvive:shieldblock"},
 	}
 })
