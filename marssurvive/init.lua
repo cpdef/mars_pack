@@ -25,11 +25,7 @@ end
 -- seting up settings for joined players
 minetest.register_on_joinplayer(function(player)
 		player:override_day_night_ratio(12000)
-		if player:getpos().y<=1000 then
-			marssurvive.player_space[player:get_player_name()]={inside=0}
-		else
-			marssurvive.player_space[player:get_player_name()]={inside=1}
-		end
+		marssurvive.player_space[player:get_player_name()]={inside=""}
 		marssurvive_space(player)
 		player:hud_add({
 			hud_elem_type = "image",
@@ -43,14 +39,20 @@ end)
 
 function marssurvive_space(player)
 	local pos=player:getpos().y
-	if marssurvive.player_space[player:get_player_name()].inside==0 and pos<=1000 then
-		marssurvive.player_space[player:get_player_name()].inside=1
+	if marssurvive.player_space[player:get_player_name()].inside~="cave" and pos<=-100 then
+		marssurvive.player_space[player:get_player_name()].inside="cave"
 		marssurvive_setgrav(player,0.3)
 		minetest.after(0.1,function()
-			player:set_sky({r=219, g=168, b=117},"plain",{})
+			player:set_sky(000000, "plain", {}, false)
 		end)
-	elseif marssurvive.player_space[player:get_player_name()].inside==1 and pos>1000 then
-		marssurvive.player_space[player:get_player_name()].inside=0
+	elseif marssurvive.player_space[player:get_player_name()].inside~="mars" and (pos>-100) and (pos<=1000) then
+		marssurvive.player_space[player:get_player_name()].inside="mars"
+		marssurvive_setgrav(player,0.3)
+		minetest.after(0.1,function()
+			player:set_sky({r=219, g=168, b=117},"plain",{}, false)
+		end)
+	elseif marssurvive.player_space[player:get_player_name()].inside~="space" and pos>1000 then
+		marssurvive.player_space[player:get_player_name()].inside="space"
 		marssurvive_setgrav(player,0.05)
 		minetest.after(0.1,function()
 			player:set_sky({r=0, g=0, b=0},"skybox",{"marssurvive_space_sky.png","marssurvive_space_sky.png^marssurvive_mars.png","marssurvive_space_sky.png","marssurvive_space_sky.png","marssurvive_space_sky.png","marssurvive_space_sky.png"})

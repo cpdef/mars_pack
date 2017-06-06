@@ -186,11 +186,3 @@ minetest.register_node("marsair:airgen", {
 		end,
 	}},
 })
-
-minetest.register_craft({
-	output = "marsair:airgen",
-	recipe = {
-		{"marssurvive:shieldblock","marssurvive:shieldblock","marssurvive:shieldblock"},
-		{"marssurvive:shieldblock","marssurvive:oxogen", "marssurvive:shieldblock"},
-	}
-})
