@@ -1,28 +1,52 @@
+marssurvive_aliens = {
+	alien_abm_max = 4, 
+	alien_spawnchance = 80*80*2, --(^-1)
+	alien_lifetime = 25,
+	alien_spawninterval = 1000
+}
+
 minetest.register_abm({
 	nodenames = {"air"},
-	neighbors = {"marssurvive:stone_medium","marssurvive:stone_small","marssurvive:stone","default:dirt_with_grass"},
-	interval = 120,
-	chance = 50,
+	neighbors = {"marssurvive:stone_medium","marssurvive:stone_small", 
+		     "marssurvive:stone", "marssurvive:sand",
+		     "default:dirt_with_grass"},
+	interval = marssurvive_aliens.alien_spawninterval,
+	chance = marssurvive_aliens.alien_spawnchance,
 	action = function(pos)
 		local name=minetest.get_node(pos).name
 		pos={x=pos.x,y=pos.y+1,z=pos.z}
-		if math.random(45)==1 and minetest.get_node(pos).name=="air" then
+		if minetest.get_node(pos).name=="air" then
+			local count = 0
+			local objects = minetest.get_objects_inside_radius(pos, 50)
+			for _, obj in ipairs(objects) do
+				local entity = obj:get_luaentity()
+				if entity then
+					if entity.name:find('alien') then
+						count = count +1
+					end
+				end
+			end
+			if count > marssurvive_aliens.alien_abm_max then
+				return 
+			end
+
+
 			local rnd=math.random(10)
     			local np=minetest.find_node_near(pos, 1,{"marssurvive:stone"})
 			if np~=nil and pos.y>0 then
 				rnd=-1
 			end
-			if rnd==1 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_common") end
-			if rnd==2 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_death") end
-			if rnd==3 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_big") end
-			if rnd==4 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_teleport") end
-			if rnd==5 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_small") end
-			if rnd==6 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_glitch") end
-			if rnd==7 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_sand") end
-			if rnd==8 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_glow") end
-			if rnd==9 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_stone") end
-			if rnd==10 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_warn") end
-			if rnd==11 and marssurvive_aliens_max(1)==true then minetest.env:add_entity(pos, "marssurvive_aliens:alien_crystal") end
+			if rnd==1 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_common") end
+			if rnd==2 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_death") end
+			if rnd==3 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_big") end
+			if rnd==4 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_teleport") end
+			if rnd==5 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_small") end
+			if rnd==6 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_glitch") end
+			if rnd==7 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_sand") end
+			if rnd==8 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_glow") end
+			if rnd==9 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_stone") end
+			if rnd==10 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_warn") end
+			if rnd==11 then minetest.env:add_entity(pos, "marssurvive_aliens:alien_crystal") end
 			return
 		end
 	end,
@@ -30,23 +54,6 @@ minetest.register_abm({
 
 
 --ALIEN REGISTRATION
-function marssurvive_aliens_max(check,add)
-		local c=0
-		for i in pairs(marssurvive.aliens) do
-			c=c+1
-			if marssurvive.aliens[i]:getpos()==nil then
-				table.remove(marssurvive.aliens,c)
-				c=c-1
-			end
-		end
-		if c>=marssurvive.aliens_max then return false end
-		if check==0 then
-			table.insert(marssurvive.aliens,add)
-		end
-		return true
-end
-
-
 local function marssurvive_distance(self,o)
 if o==nil or o.x==nil then return nil end
 local p=self.object:getpos()
@@ -301,7 +308,9 @@ local marssurvive_alien=function(self, dtime)
 						and (not(self.status_curr=="attack" and ob:get_luaentity().name=="__builtin:item")))) then
 						self.attack_target=ob
 						self.status_curr="attack"
-						self.life=100
+						if ob:is_player() then
+							self.life=100
+						end
 						break
 					end
 				end
@@ -314,7 +323,6 @@ local marssurvive_alien=function(self, dtime)
 					  and (not(self.status_curr=="attack" and ob:get_luaentity().name=="__builtin:item")))) then
 						self.attack_target=ob
 						self.status_curr="attack"
-						self.life=100
 						break
 					end
 				end
@@ -339,8 +347,8 @@ function setanim(self,type)
 	return self
 end
 
-function marssurvive_aliens_reg_alien(name,hp,drop,team,distance,texture,size,shoot,tp)
-local life = 20
+function marssurvive_aliens_reg_alien(name,hp,drop,team,distance,texture,size,shoot,tp,speed)
+local life = marssurvive_aliens.alien_lifetime
 local alien_type = "monster"
 if (team == "human") then 
         life = 10000000000 --never die! ( die after 317,... years ;) ) 
@@ -392,8 +400,6 @@ on_punch=function(self, puncher, time_from_last_punch, tool_capabilities, dir)
 on_rightclick=function(self, clicker)
 	if (self.team ~= "human") then return end
 	if (clicker:get_player_name() ~= self.owner) then return end
-        
-	print(self.owner_command)
 	if self.owner_command == "" then
 		self.owner_command = "stand"
 		print('stand')
@@ -414,10 +420,10 @@ on_activate=function(self, staticdata)
 			self.owner_command = data.owner_command
 		end
 		--don't remove friendly aliens
-		if marssurvive_aliens_max(0,self.object)==false and self.team ~= "human" then
-			self.object:remove()
-			return self
-		end
+		--if marssurvive_aliens_max(0,self.object)==false and self.team ~= "human" then
+		--	self.object:remove()
+		--	return self
+		--end
 		self.object:setvelocity({x=0,y=-8,z=0})
 		self.object:setacceleration({x=0,y=-8,z=0})
 		setanim(self,"stand")
@@ -434,7 +440,7 @@ on_step=marssurvive_alien,
 	timer=0,
 	timer2=0,
 	drop=drop,
-	move={x=0,y=0,z=0,speed=2},
+	move={x=0,y=0,z=0,speed=speed},
 	dmg=4,
 	team=team,
 	type = alien_type,
@@ -470,17 +476,17 @@ end
         
 end
 
-marssurvive_aliens_reg_alien("common",50,"marssurvive_aliens:aliengun","msalien1",10,"marssurvive_sp2.png",{x=0.6, y=1},1,0)
-marssurvive_aliens_reg_alien("death",40,"marssurvive:unused2","msalien1",10,"marssurvive_sp3.png",{x=1, y=1},0,0)
-marssurvive_aliens_reg_alien("big",80,"marssurvive:unused","msalien2",10,"marssurvive_sp4.png",{x=2, y=2},0,0)
-marssurvive_aliens_reg_alien("teleport",60,"default:copper_lump","msalien3",20,"marssurvive_sp4.png^[colorize:#00d76f33",{x=1, y=1},0,1)
-marssurvive_aliens_reg_alien("small",20,"marssurvive:unusedgold","msalien4",20,"marssurvive_sp4.png^[colorize:#0ed2ff33",{x=0.5, y=0.5},0,0)
-marssurvive_aliens_reg_alien("glitch",30,"marssurvive:glitch","msalien3",15,"marssurvive_glitsh.png",{x=0.6, y=1.4},1,1)
-marssurvive_aliens_reg_alien("sand",50,"default:copper_lump","msalien1",15,"default_desert_sand.png^[colorize:#cf411b66",{x=1, y=1},0,0)
-marssurvive_aliens_reg_alien("glow",80,"marssurvive:stone_glow","msalien1",15,"marssurvive_oxogen.png^[colorize:#00ff00aa",{x=1, y=1.2},0,0)
-marssurvive_aliens_reg_alien("stone",60,"default:copper_lump","msalien1",15,"default_desert_stone.png^[colorize:#cf7d6788",{x=1, y=0.5},0,0,1)
-marssurvive_aliens_reg_alien("warn",20,"marssurvive:warning","msalien1",15,"marssurvive_warntape.png",{x=2, y=1},1,0)
-marssurvive_aliens_reg_alien("crystal",100,"marssurvive:crystal","msalien3",15,"marssurvive_glitsh.png^[colorize:#cc0000aa",{x=1, y=0.2},0,1)
+marssurvive_aliens_reg_alien("common",50,"marssurvive_aliens:aliengun","msalien1",10,"marssurvive_sp2.png",{x=0.6, y=1},1,0,2)
+marssurvive_aliens_reg_alien("death",40,"marssurvive:unused2","msalien1",10,"marssurvive_sp3.png",{x=1, y=1},0,0,2)
+marssurvive_aliens_reg_alien("big",80,"marssurvive:unused","msalien2",10,"marssurvive_sp4.png",{x=2, y=2},0,0,4)
+marssurvive_aliens_reg_alien("teleport",60,"default:copper_lump","msalien3",20,"marssurvive_sp4.png^[colorize:#00d76f33",{x=1, y=1},0,1,3)
+marssurvive_aliens_reg_alien("small",20,"marssurvive:unusedgold","msalien4",20,"marssurvive_sp4.png^[colorize:#0ed2ff33",{x=0.5, y=0.5},0,0,1)
+marssurvive_aliens_reg_alien("glitch",30,"marssurvive:glitch","msalien3",15,"marssurvive_glitsh.png",{x=0.6, y=1.4},1,1,3)
+marssurvive_aliens_reg_alien("sand",50,"default:copper_lump","msalien1",15,"default_desert_sand.png^[colorize:#cf411b66",{x=1, y=1},0,0,1)
+marssurvive_aliens_reg_alien("glow",80,"marssurvive:stone_glow","msalien1",15,"marssurvive_oxogen.png^[colorize:#00ff00aa",{x=1, y=1.2},0,0,2)
+marssurvive_aliens_reg_alien("stone",60,"default:copper_lump","msalien1",15,"default_desert_stone.png^[colorize:#cf7d6788",{x=1, y=0.5},0,0,1,2)
+marssurvive_aliens_reg_alien("warn",20,"marssurvive:warning","msalien1",15,"marssurvive_warntape.png",{x=2, y=1},1,0,3)
+marssurvive_aliens_reg_alien("crystal",100,"marssurvive:crystal","msalien3",15,"marssurvive_glitsh.png^[colorize:#cc0000aa",{x=1, y=0.2},0,1,5)
 
 marssurvive_tmp_owner=""
 function marssurvive_awshoot(self)
@@ -706,6 +712,7 @@ minetest.register_node("marssurvive_aliens:secam_off", {
 			{-0.1, -0.2, -0.1, 0.1, -0.4, 0.1}}
 
 	},
+	drop = "marssurvive_aliens:secam",
 	on_place = minetest.rotate_node,
 	on_construct = function(pos)
 		minetest.get_meta(pos):set_string("infotext","click to activate and secure")
@@ -736,12 +743,11 @@ minetest.register_node("marssurvive_aliens:secam", {
 	is_ground_content = false,
 	paramtype = "light",
 	paramtype2 = "facedir",
-	drop="marssurvive_aliens:secam_off",
 	node_box = {type="fixed",
 		fixed={	{-0.2, -0.5, -0.2, 0.2, -0.4, 0.2},
 			{-0.1, -0.2, -0.1, 0.1, -0.4, 0.1}}
 	},
-on_timer=function(pos, elapsed)
+	on_timer=function(pos, elapsed)
 		for i, ob in pairs(minetest.get_objects_inside_radius(pos, 15)) do
 			if ob:get_luaentity() and ob:get_luaentity().type=="monster" then
 				local v=ob:getpos()
@@ -809,7 +815,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "marssurvive_alien:secam",
+	output = "marssurvive_aliens:secam",
 	recipe = {
 		{"default:steel_ingot", "dye:black", "default:steel_ingot"},
 		{"default:glass", "default:steel_ingot", "default:glass"},
@@ -818,7 +824,7 @@ minetest.register_craft({
 })
 
 --BACKWARDS COMPATIBLITY
-minetest.register_alias("marssurvive:secam", "marssurvive_alien:secam")
+minetest.register_alias("marssurvive:secam", "marssurvive_aliens:secam")
 minetest.register_alias("marssurvive:aliencatcher", "marssurvive_aliens:aliencatcher")
 minetest.register_alias("marssurvive:secam_off", "marssurvive_aliens:secam_off")
 minetest.register_alias("marssurvive:aliengun", "marssurvive_aliens:aliengun")

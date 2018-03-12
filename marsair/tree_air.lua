@@ -42,6 +42,11 @@ minetest.register_abm({
 	chance = marsairconfig.tree_air_chance,
 	action = function(pos)
 		local node = minetest.get_node(pos)
+		local airleave = marsair.registered_airleaves[node.name]
+		if airleave == nil then 
+			minetest.log('error', 'TREEAIR'..node.name)
+			return 
+		end
 		local trunk = marsair.registered_airleaves[node.name].trunk
 		local replace_pos = minetest.find_node_near(pos, 1, "air") 
 			or minetest.find_node_near(pos, 1, "marsair:air_stable")
@@ -64,4 +69,4 @@ minetest.register_abm({
 
 
 marsair.register_airleaves("default:leaves", "default:tree")
---marsair.register_airleaves("default:bush_leaves", "default:bush_stem")
+marsair.register_airleaves("default:bush_leaves", "default:bush_stem")

@@ -4,35 +4,36 @@ local S = mobs.intllib
 mobs.human = {
 	items = {
 		--{item for sale, price}
-		{"default:apple 10", "default:gold_ingot 2"},
-		{"farming:bread 10", "default:gold_ingot 4"},
-		{"default:clay 10", "default:gold_ingot 2"},
-		{"default:brick 10", "default:gold_ingot 4"},
-		{"default:glass 10", "default:gold_ingot 4"},
-		{"default:obsidian 10", "default:gold_ingot 15"},
-		{"default:diamond 1", "default:gold_ingot 5"},
-		{"farming:wheat 10", "default:gold_ingot 2"},
-		{"default:tree 5", "default:gold_ingot 4"},
-		{"default:stone 10", "default:gold_ingot 8"},
-		{"default:desert_stone 10", "default:gold_ingot 8"},
-		{"default:sapling 1", "default:gold_ingot 1"},
-		{"default:pick_steel 1", "default:gold_ingot 2"},
-		{"default:sword_steel 1", "default:gold_ingot 2"},
-		{"default:shovel_steel 1", "default:gold_ingot 1"},
+		{"mobs_animal:penguin_set 1", "currency:minegeld 10"},
+		{"mobs_animal:cow_set 1", "currency:minegeld 20"},
+		{"mobs_animal:sheep_white_set 1", "currency:minegeld 15"},
+		{"mobs_animal:chicken_set 1", "currency:minegeld 5"},
+		{"mobs_animal:pumba_set 1", "currency:minegeld 15"},
+		{"mobs_animal:bunny_set 1", "currency:minegeld 5"},
+		{"mobs_animal:kitten_set 1", "currency:minegeld 5"},
+		{"currency:minegeld 10", "default:gold_ingot 5"},
+		{"default:gold_ingot 1", "currency:minegeld 10"}
 	},
 	names = {
 		"Bob", "Duncan", "Bill", "Tom", "James", "Ian", "Lenny"
 	}
 }
 
+if minetest.get_modpath("marsair") ~= nil then
+	mobs.human.items[#mobs.human.items+1] = {"marsair:air 1", "currency:minegeld_5 1"}
+end
+if minetest.get_modpath("mesecons_stickyblocks") ~= nil then
+	mobs.human.items[#mobs.human.items+1] = {"mesecons_stickyblocks:sticky_block_all 1", "currency:minegeld_10 1"}
+end
+
 -- Trader ( same as NPC but with right-click shop )
 
 mobs:register_mob("mobs_npc:trader", {
 	type = "npc",
-	passive = false,
-	damage = 20,
-	attack_type = "dogfight",
-	attacks_monsters = true,
+	passive = true,
+	damage = 0,
+	--attack_type = "dogfight",
+	attacks_monsters = false,
 	pathfinding = false,
 	hp_min = 9999999,
 	hp_max = 9999999,
@@ -50,7 +51,7 @@ mobs:register_mob("mobs_npc:trader", {
 	jump = false,
 	drops = {},
 	water_damage = 0,
-	lava_damage = 4,
+	lava_damage = 0,
 	no_air_damage = true,
 	light_damage = 0,
 	follow = {"default:diamond"},
@@ -232,8 +233,10 @@ function mobs.add_goods(entity)
 	local goods_to_add = nil
 
 	for i = 1, 15 do
-		mobs.trader_inventory.set_stack(mobs.trader_inventory,
+		if race.items[i] ~= nil then
+			mobs.trader_inventory.set_stack(mobs.trader_inventory,
 				"goods", i, race.items[i][1])
+		end
 	end
 end
 

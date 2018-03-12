@@ -46,9 +46,9 @@ spacesuit.register_spacesuit = function(name, inventory_image, protection, textu
         })
 end
 
-spacesuit.register_spacesuit("", "marssurvive_sp.png", 0, {"spacesuit_sp_white.png"})
-spacesuit.register_spacesuit("red", "marssurvive_sp.png", 33, {"spacesuit_sp_red.png"})
-spacesuit.register_spacesuit("blue", "marssurvive_sp.png", 66, {"spacesuit_sp_blue.png"})
+spacesuit.register_spacesuit("", "spacesuit_sp_white_inv.png", 0, {"spacesuit_sp_white.png"})
+spacesuit.register_spacesuit("red", "spacesuit_sp_red_inv.png", 33, {"spacesuit_sp_red.png"})
+spacesuit.register_spacesuit("blue", "spacesuit_sp_blue_inv.png", 66, {"spacesuit_sp_blue.png"})
 
 --CRAFT
 
@@ -138,11 +138,9 @@ minetest.register_globalstep(function(dtime)
 		if stack_one_sp(inv) then
 			local wear = inv:get_stack("main", 1):get_wear()
 			if n == "marsair:air_stable" then
-				if wear < 65533 then
-					local new_wear = wear-(65534/20)
-					if new_wear < 0 then new_wear = 0 end
-					set_wear_sp(inv, new_wear)
-				end
+				local new_wear = wear-(65534/20)
+				if new_wear < 0 then new_wear = 0 end
+				set_wear_sp(inv, new_wear)
 			else
 				if wear < 65533 then
 					local new_wear=wear+ (65534/900)

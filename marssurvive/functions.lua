@@ -1,7 +1,7 @@
 
 minetest.register_abm({			-- making default plants grow on grass
 	nodenames = {"default:dirt_with_grass"},
-	interval = 120,
+	interval = 40,
 	chance = 120,
 	action = function(pos)
 		local posu={x=pos.x,y=pos.y+1,z=pos.z}
@@ -10,12 +10,12 @@ minetest.register_abm({			-- making default plants grow on grass
 			local rnd=math.random(1,13)
 			if rnd==1 then
 				minetest.set_node(posu, {name = "default:junglegrass"})
-			elseif rnd==2 then
+			elseif (rnd==2 or rnd == 14 or rnd == 15) then
 				minetest.set_node(posu, {name = "default:grass_" .. math.random(1,5)})
-			elseif rnd==3 then
-				minetest.set_node(posu, {name = "farming:wheat_" .. math.random(1,8)})
+			elseif (rnd==3 or rnd == 16) then
+				minetest.set_node(posu, {name = "farming:wheat_" .. math.random(4,8)})
 			elseif rnd==4 then
-				minetest.set_node(posu, {name = "farming:cotton_" .. math.random(1,8)})
+				minetest.set_node(posu, {name = "farming:cotton_" .. math.random(4,8)})
 			elseif rnd==5 then
 				minetest.set_node(posu, {name = "flowers:mushroom_brown"})
 			elseif rnd==6 then
@@ -40,7 +40,6 @@ minetest.register_abm({			-- making default plants grow on grass
 })
 
 
--- in this case is the default air the vacuum, and air2 is air
 minetest.register_abm({
 	nodenames = {"default:water_source"},
 	neighbors = {"marssurvive:ice"},

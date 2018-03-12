@@ -30,7 +30,7 @@ mobs:register_mob("mobs_animal:chicken", {
 	},
 	walk_velocity = 1,
 	run_velocity = 3,
-	runaway = true,
+	--runaway = true,
 	drops = {
 		{name = "mobs:chicken_raw", chance = 1, min = 2, max = 2},
 		{name = "mobs:chicken_feather", chance = 3, min = 1, max = 2},
@@ -81,23 +81,6 @@ mobs:register_mob("mobs_animal:chicken", {
 			max_hear_distance = 5,
 		})
 	end,
-})
-
-
-local spawn_on = "default:dirt_with_grass"
-
-if minetest.get_modpath("ethereal") then
-	spawn_on = "ethereal:bamboo_dirt"
-end
-
-mobs:spawn({
-	name = "mobs_animal:chicken",
-	nodes = {spawn_on},
-	min_light = 10,
-	chance = 15000,
-	active_object_count = 2,
-	min_height = 0,
-	day_toggle = true,
 })
 
 

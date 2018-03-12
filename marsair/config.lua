@@ -1,7 +1,7 @@
 --time after that air disappears without by going trought the wall or so
 --because in real u can't hold air endless in any building
 marsairconfig.leak_time = 30*60
-marsairconfig.leak_chance = 10
+marsairconfig.leak_chance = 50
 
 --the count of air-units a generator needs to generate air
 marsairconfig.need_air_generation_count = 8
@@ -10,12 +10,12 @@ marsairconfig.need_air_generation_count = 8
 marsairconfig.need_air_fixleak_count = 4
 
 --the time one flower needs to generate an air-unit
-marsairconfig.flower_air_time = 20*60
+marsairconfig.flower_air_time = 2*60
 --the chance to generate air by flower after flower_air_time
-marsairconfig.flower_air_chance = 4
+marsairconfig.flower_air_chance = 3.333
 
 --same with tree
-marsairconfig.tree_air_time = 40*60
+marsairconfig.tree_air_time = 5*60
 marsairconfig.tree_air_chance = 10
 
 --the time until the tree-air becomes normal air and disappear

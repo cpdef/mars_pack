@@ -39,6 +39,7 @@ marsair.needed_air = {name="marssurvive:air", count=marsairconfig.need_air_gener
 --air generation
 function marsair.generate(pos)
 	local new_item =  marsair.needed_air
+	new_item.count = 1
 	if not marsair.is_airflower({x=pos.x, y=pos.y+1, z=pos.z}) then return end
 	if (minetest.get_node({x=pos.x, y=pos.y+2, z=pos.z}).name ~= "marsair:pot_lid") then
 		return end
@@ -73,6 +74,7 @@ end
 --tree-air generation
 function marsair.clean(pos)
 	local new_item = marsair.needed_air
+	new_item.count = 1
 	local status = false
 	local positions = minetest.find_nodes_in_area({y=pos.y-2, x=pos.x-2, z=pos.z-2},
 									     {y=pos.y+2, x=pos.x+2, z=pos.z+2},
@@ -218,6 +220,7 @@ minetest.register_node("marsair:airmaker", {
 		meta:set_string("formspec", formspec)
 		local inv = meta:get_inventory()
 		inv:set_size("main", 4)
+		
 	end,
 	on_punch = function(pos, node, clicker, item, _)
 		local node = minetest.get_node({x=pos.x, y=pos.y+2, z=pos.z})
@@ -231,12 +234,14 @@ minetest.register_node("marsair:airmaker", {
 	end,
 	after_place_node = marsair.after_place,
 	after_dig_node = marsair.after_dig,
-	on_destruct = function(pos, node, _)
-		minetest.after(0.1, function()
-			if (minetest.get_node(pos).name ~= "marsair:airmaker") then
-				marsair.replacenode({x=pos.x, y=pos.y+2, z=pos.z})
-			end
-		end)
+	on_destruct = function(pos)
+		--need to replace the pot lid
+		local replacepos = {x=pos.x, y=pos.y+2, z=pos.z}
+		if minetest.get_node(replacepos).name ~= "marsair:pot_lid" then return end
+		minetest.after(0.1, function(pos, replacepos)
+			if minetest.get_node(pos).name == "marsair:airmaker" then return end
+			marssurvive.replacenode(replacepos)
+		end, pos, replacepos)
 	end
 })
 
@@ -284,7 +289,7 @@ minetest.register_abm{
 minetest.register_abm{
         label = "making tree-air",
 	nodenames = {"marsair:tree_air_cleaner"},
-	interval = tree_air_maker_time,
+	interval = marsairconfig.tree_air_maker_time,
 	chance = 1,
 	action = function(pos)
 		marsair.clean(pos)

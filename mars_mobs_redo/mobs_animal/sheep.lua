@@ -154,7 +154,7 @@ for _, col in ipairs(all_colours) do
 							ent.tamed = true
 
 							-- take item
-							if not minetest.setting_getbool("creative_mode") then
+							if not minetest.settings:get_bool("creative_mode") then
 								item:take_item()
 								clicker:set_wielded_item(item)
 							end
@@ -188,16 +188,5 @@ local spawn_on = "default:dirt_with_grass"
 if minetest.get_modpath("ethereal") then
 	spawn_on = "ethereal:green_dirt"
 end
-
-mobs:spawn({
-	name = "mobs_animal:sheep_white",
-	nodes = {spawn_on},
-	min_light = 10,
-	chance = 15000,
-	min_height = 0,
-	max_height = 31000,
-	day_toggle = true,
-})
-
 
 mobs:alias_mob("mobs:sheep", "mobs_animal:sheep_white") -- compatibility

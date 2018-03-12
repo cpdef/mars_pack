@@ -12,11 +12,11 @@ minetest.register_tool("marssurvive:diglazer", {
 		minetest.sound_play("marssurvive_dig", {pos=pos, gain = 1, max_hear_distance = 5,})
 		minetest.sound_play("marssurvive_bullet1", {pos=pos, gain = 1, max_hear_distance = 5,})
 		if pointed_thing.type=="object" then
-			if not ob:get_armor_groups().immortal then
+			if not pointed_thing.ref:get_armor_groups().immortal then
 				pointed_thing.ref:set_hp(pointed_thing.ref:get_hp()-5)
 				pointed_thing.ref:punch(user, {full_punch_interval=1.0,damage_groups={fleshy=4}}, "default:bronze_pick", nil)
-				return itemstack
 			end
+			return itemstack
 		end
 		local name=user:get_player_name()
 		local dir = user:get_look_dir()
@@ -26,10 +26,10 @@ minetest.register_tool("marssurvive:diglazer", {
 			if minetest.is_protected(p,name) or minetest.get_meta(p):get_string("infotext")~="" then
 				return itemstack
 			elseif minetest.registered_nodes[minetest.get_node(p).name].walkable then
-				marssurvive.replacenode(p)
 				local it=minetest.add_item(p, minetest.get_node(p).name)
 				it:setvelocity({x=math.random(-1,1),y=2,z=math.random(-1,1)})
 				it:get_luaentity().age=marssurvive.itemdroptime
+				marssurvive.replacenode(p)
 			end
 		end
 		return itemstack

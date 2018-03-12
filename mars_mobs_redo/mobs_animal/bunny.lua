@@ -59,7 +59,7 @@ mobs:register_mob("mobs_animal:bunny", {
 
 		if item:get_name() == "mobs:lava_orb" then
 
-			if not minetest.setting_getbool("creative_mode") then
+			if not minetest.settings:get_bool("creative_mode") then
 				item:take_item()
 				clicker:set_wielded_item(item)
 			end
@@ -85,16 +85,6 @@ local spawn_on = "default:dirt_with_grass"
 if minetest.get_modpath("ethereal") then
 	spawn_on = "ethereal:prairie_dirt"
 end
-
-mobs:spawn({
-	name = "mobs_animal:bunny",
-	nodes = {spawn_on},
-	min_light = 10,
-	chance = 15000,
-	min_height = 0,
-	day_toggle = true,
-})
-
 
 mobs:register_egg("mobs_animal:bunny", S("Bunny"), "mobs_bunny_inv.png", 0)
 
