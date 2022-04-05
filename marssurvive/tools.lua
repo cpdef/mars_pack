@@ -1,5 +1,5 @@
 minetest.register_tool("marssurvive:diglazer", {
-	description = "Dig lazer",
+	description = "Dig laZer",
 	range = 11,
 	inventory_image = "marssurvive_lazerdig.png",
 	on_use = function(itemstack, user, pointed_thing)
@@ -34,19 +34,4 @@ minetest.register_tool("marssurvive:diglazer", {
 		end
 		return itemstack
 	end
-})
-
-
-minetest.register_tool("marssurvive:sandpick", {
-	description = "Sandstone Pickaxe",
-	inventory_image = "default_tool_woodpick.png^[colorize:#cf411b66",
-	tool_capabilities = {
-		full_punch_interval = 1,
-		max_drop_level=0,
-		groupcaps={
-			cracky = {times={[3]=2.0, [3]=1.00}, uses=20, maxlevel=1},
-			crumbly = {times={[1]=0.50, [2]=0.80, [3]=0.30}, uses=10, maxlevel=1},
-		},
-		damage_groups = {fleshy=3},
-	},
 })

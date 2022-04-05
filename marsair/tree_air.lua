@@ -1,26 +1,3 @@
-
-
-minetest.register_node("marsair:air_tree", {
-	description = "10% Air 90% vacuum [You Hacker!]",
-	walkable = false,
-	pointable = false,
-	diggable = false,
-	buildable_to = true,
-	drawtype = "glasslike",
-	post_effect_color = {a = 180, r = 120, g = 120, b = 120},
-	alpha = 20,
-	tiles = {"marssurvive_air.png^[colorize:#E0E0E033"},
-	groups = {marsair=1,not_in_creative_inventory=0},
-	paramtype = "light",
-	sunlight_propagates =true,
-	on_construct = function(pos)
-		minetest.get_node_timer(pos):start(marsairconfig.tree_air_disappear_time)
-	end,
-	on_timer = function (pos, elapsed)
-		marssurvive.replacenode(pos)
-	end,
-})
-
 marsair.registered_airleaves = {}
 marsair.register_airleaves = function(name, trunk)
 	local nodedef = minetest.registered_nodes[name]
@@ -36,35 +13,33 @@ end
 
 minetest.register_abm({
 	label = "tree air generation",
-	nodenames = {"group:marsair_leaves"},
-	neighbors = {"air", "marsair:air_stable"},
+	nodenames = {"group:marsair_leaves", },
+	neighbors = {"air", "gas:oxygen"},
 	interval = marsairconfig.tree_air_time,
 	chance = marsairconfig.tree_air_chance,
 	action = function(pos)
 		local node = minetest.get_node(pos)
 		local airleave = marsair.registered_airleaves[node.name]
-		if airleave == nil then 
+		if airleave == nil then
 			minetest.log('error', 'TREEAIR'..node.name)
-			return 
+			return
 		end
 		local trunk = marsair.registered_airleaves[node.name].trunk
-		local replace_pos = minetest.find_node_near(pos, 1, "air") 
-			or minetest.find_node_near(pos, 1, "marsair:air_stable")
+		local add_oxygen_pos = minetest.find_node_near(pos, 1, "air")
+			or minetest.find_node_near(pos, 1, "gas:oxygen")
 		
 		if type(trunk) == "table" then
 			for i, v in pairs(trunk) do
 				if minetest.find_node_near(pos, 4, v) then
-					minetest.set_node(replace_pos, {name="marsair:air_tree"})
-					return
+					gas.balance(add_oxygen_pos, "oxygen", true, 10)
 				end
 			end
 		else
 			if minetest.find_node_near(pos, 4, trunk) then
-				minetest.set_node(replace_pos, {name="marsair:air_tree"})
-				return
+				gas.balance(add_oxygen_pos, "oxygen", true, 10)
 			end
 		end
-	end,
+	end
 })
 
 

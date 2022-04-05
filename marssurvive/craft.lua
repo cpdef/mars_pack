@@ -9,10 +9,10 @@ minetest.register_craft({
 
 
 
-minetest.register_craft({
-	output = "default:sand",
-	recipe = {"group:mars_sand"},
-})
+--minetest.register_craft({
+--	output = "default:sand",
+--	recipe = {"group:mars_sand"},
+--})
 
 minetest.register_craft({
 	output = "marssurvive:smart_glasspane_side 2",
@@ -79,15 +79,6 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "marssurvive:mars_sapling 8",
-	recipe = {
-		{"marssurvive:clayblock","marssurvive:clayblock","marssurvive:clayblock"},
-		{"marssurvive:clayblock","marssurvive:clayblock", "marssurvive:clayblock"},
-		{"marssurvive:clayblock","default:stick",	"marssurvive:clayblock"},
-	}
-})
-
-minetest.register_craft({
 	output = "marssurvive:steelwallblock 8",
 	recipe = {
 		{"default:steel_ingot","default:steel_ingot","default:steel_ingot"},
@@ -110,6 +101,7 @@ minetest.register_craft({
 		{"marssurvive:sand","marssurvive:clayblock","marssurvive:sand"},
 	}
 })
+
 minetest.register_craft({
 	output = "default:stick 4",
 	recipe = {{"marssurvive:clayblock","",""}}})
@@ -169,25 +161,13 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	type = "fuel",
-	recipe = "marssurvive:mars_sapling",
-	burntime = 10,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "marssurvive:wood",
-	burntime = 15,
-})
-
-minetest.register_craft({
 	type = "cooking",
 	output = "default:glass",
 	recipe = "marssurvive:smart_glasspane_side",
 })
 
 minetest.register_craft({
-	type = "cooking"
+	type = "cooking",
 	output = "default:glass",
 	recipe = "group:mars_sand",
 })

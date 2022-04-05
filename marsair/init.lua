@@ -10,25 +10,17 @@ dofile(modfolder.."/config.lua")
 dofile(modfolder.."/flower_conf.lua")
 
 marsair.is_airflower = function(pos)
-	local nodename = minetest.get_node(pos).name 
+	local nodename = minetest.get_node(pos).name
+        if (minetest.get_item_group(nodename, "plant")) > 0 then
+            return true
+        end
+        if (minetest.get_item_group(nodename, "seed")) > 0 then
+            return true
+        end
 	for _, flower in pairs(marsair.air_flowers) do
 		if nodename == flower then return true end
 	end
 	return false
-end
-
---AIR
-dofile(modfolder.."/air.lua")
-
---for replace removed doors and removed nodes by marssurvive:diglazer:
-function marssurvive.replacenode(pos)
-    	local np=minetest.find_node_near(pos, 1,{"marsair:air_stable"})
-	local not_loaded = (minetest.find_node_near(pos, 1,{"ignore"}) ~= nil)
-	if np~=nil or not_loaded then
-		minetest.set_node(pos, {name = "marsair:air_stable"})
-	else
-		minetest.set_node(pos, {name = "air"})
-	end
 end
 
 --PIPEWORKS

@@ -2,6 +2,7 @@
 
 spacesuit = {breath_timer=0,skin={}}
 spacesuit.registered_spacesuits = {}
+spacesuit.registered_breathable_gas = {}
 
 --sp manipulation
 local stack_one_sp = function(inventory)
@@ -39,24 +40,18 @@ end
 spacesuit.register_spacesuit = function(name, inventory_image, protection, textures)
         local tool_name = "spacesuit:sp" .. name
 	spacesuit.registered_spacesuits[tool_name] = {sp_name=name, protection=protection, textures=textures}
-	minetest.register_tool(tool_name, {
+	minetest.register_tool(":"..tool_name, {
 	        description = "Spacesuit " .. name .. " (wear slot 1)",
 	        range = 4,
 	        inventory_image = inventory_image,
         })
 end
 
-spacesuit.register_spacesuit("", "spacesuit_sp_white_inv.png", 0, {"spacesuit_sp_white.png"})
-spacesuit.register_spacesuit("red", "spacesuit_sp_red_inv.png", 33, {"spacesuit_sp_red.png"})
-spacesuit.register_spacesuit("blue", "spacesuit_sp_blue_inv.png", 66, {"spacesuit_sp_blue.png"})
-
---CRAFT
-
 --GASSBOTTLE
-minetest.register_node("spacesuit:air_gassbottle", {
-	description = "Air gassbottle",
+minetest.register_node("spacesuit:air_gasbottle", {
+	description = "Air gasbottle",
 	tiles = {"default_steel_block.png"},
-	inventory_image = "gassbottle_full.png",
+	inventory_image = "gasbottle_full.png",
 	drawtype = "nodebox",
 	groups = {dig_immediate=3},
 	sounds = default.node_sound_stone_defaults(),
@@ -68,60 +63,38 @@ minetest.register_node("spacesuit:air_gassbottle", {
 	fixed={-0.1,-0.5,-0.1,0.1,0.3,0.1}},
 })
 
-minetest.register_craftitem("spacesuit:air_gassbottle_empty", {
+minetest.register_craftitem("spacesuit:air_gasbottle_empty", {
         description = "empty Air gassbotte",
-        inventory_image = "gassbottle_empty.png",
-    	on_place = function(itemstack, user, pointed_thing)
-	        local node = minetest.get_node(pointed_thing.under)
-	        if string.sub(node.name, 1, 14) == "marsair:airgen" then
-		        itemstack:set_count(itemstack:get_count()-1)
-			user:get_inventory():add_item("main", "spacesuit:air_gassbottle")
+        inventory_image = "gasbottle_empty.png",
+	on_place = function(itemstack, user, pointed_thing)
+		local node = minetest.get_node(pointed_thing.under)
+		-- TODO: add function on_spacesuit_refill (returns false if not possible)
+		if minetest.get_item_group(n, "breathable_gas_refill") > 0 then
+			itemstack:set_count(itemstack:get_count()-1)
+			user:get_inventory():add_item("main", "spacesuit:air_gasbottle")
 			return itemstack
 		end
 	end,
 })
 
 --CRAFT
-minetest.register_craft({
-	output = "spacesuit:sp",
-	recipe = {
-		{"spacesuit:sp","spacesuit:air_gassbottle",""}
 
-	},
-})
 
 minetest.register_craft({
-	output = "spacesuit:spred",
+	output = "spacesuit:air_gasbottle 1",
 	recipe = {
-		{"","spacesuit:sp","",},
-		{"marssurvive:unused2", "marssurvive:shieldblock", "marssurvive:unused2",},
-		{"marssurvive:unused2", "marssurvive:shieldblock", "marssurvive:unused2"},
-
-	},
-})
-
-minetest.register_craft({
-	output = "spacesuit:spblue",
-	recipe = {
-		{"","marssurvive:spred","",},
-		{"default:diamond", "default:diamondblock", "default:diamond",},
-		{"default:diamond", "default:diamondblock", "default:diamond"},
-
-	},
-})
-
-minetest.register_craft({
-	output = "spacesuit:air_gassbottle 2",
-	recipe = {
-		{"default:steel_ingot","marssurvive:oxogen","default:steel_ingot"},
+		{"default:steel_ingot","default:steel_ingot","default:steel_ingot"},
+		{"default:steel_ingot","vessels:steel_bottle","default:steel_ingot"},
+		{"default:steel_ingot","default:steel_ingot","default:steel_ingot"},
 	}
 })
 
 --FUNCTIONS
 local damage = function(node, player)
-	if node=="air" then								--(no spacesuit and in default air: lose 8 hp)
+	if node=="air" then 
+		--(no spacesuit and in default air: lose 8 hp)
 		player:set_hp(player:get_hp()-8)
-	elseif node~="marsair:air_stable" then						--(no spacesuit and inside something else: lose 1 hp)
+	elseif minetest.get_item_group(node, "breathable_gas") == 0 then						--(no spacesuit and inside something else: lose 1 hp)
 		player:set_hp(player:get_hp()-1)
 	end
 end
@@ -137,7 +110,7 @@ minetest.register_globalstep(function(dtime)
 		
 		if stack_one_sp(inv) then
 			local wear = inv:get_stack("main", 1):get_wear()
-			if n == "marsair:air_stable" then
+			if minetest.get_item_group(n, "breathable_gas") > 0 then
 				local new_wear = wear-(65534/20)
 				if new_wear < 0 then new_wear = 0 end
 				set_wear_sp(inv, new_wear)
@@ -148,7 +121,7 @@ minetest.register_globalstep(function(dtime)
 					set_wear_sp(inv, new_wear)
 					player:set_breath(11)
 				else
-					local bottle = {name="spacesuit:air_gassbottle", count=1, wear=0, metadata=""}
+					local bottle = {name="spacesuit:air_gasbottle", count=1, wear=0, metadata=""}
 					print('bottle', inv:contains_item("main", bottle))
 					if inv:contains_item("main", bottle) then
 						local removed = inv:remove_item("main", bottle)
@@ -158,9 +131,9 @@ minetest.register_globalstep(function(dtime)
 						minetest.sound_play("marssurvive_pff", {pos=pos, gain = 1, max_hear_distance = 8,})
 						
 						if inv:contains_item("main", bottle) then --have one or more bottles 
-							minetest.chat_send_player(player:get_player_name(), "Warning: one more air-gassbottle is empty!")		
+							minetest.chat_send_player(player:get_player_name(), "Warning: one more air-gasbottle is empty!")		
 						else
-							minetest.chat_send_player(player:get_player_name(), "Warning: have none air-gassbottle left!")
+							minetest.chat_send_player(player:get_player_name(), "Warning: have none air-gasbottle left!")
 						end
 					else
 						--no bottle, no wear 
@@ -191,21 +164,5 @@ end)
 minetest.register_on_leaveplayer(function(player)
 	spacesuit.skin[player:get_player_name()]=nil
 end)
-
---BACKWARDS COMPATIBLITY
-minetest.register_alias("marssurvive:air_gassbotte","spacesuit:air_gassbottle")
-minetest.register_alias("marssurvive:air_gassbotte_empty","spacesuit:air_gassbottle_empty")
-minetest.register_alias("marssurvive:sp","spacesuit:sp")
-minetest.register_alias("marssurvive:spred", "spacesuit:spred")
-minetest.register_alias("marssurvive:spblue", "spacesuit:spblue")
-
-
---for test
-minetest.register_on_player_hpchange(function(player, hp_change)
-	print("\n\nHP_CHANGE: " .. hp_change)
-	print(dump(player:get_armor_groups()))
-	return hp_change
-end, true)
-
 
 print("[MOD] Spacesuit loaded!")

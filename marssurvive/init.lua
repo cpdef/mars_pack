@@ -8,8 +8,6 @@ else
 	marssurvive.itemdroptime=hook_tmp_time-20
 end
 
-dofile(minetest.get_modpath("marssurvive") .. "/spacesuit.lua")
-dofile(minetest.get_modpath("marssurvive") .. "/mapgen.lua")
 dofile(minetest.get_modpath("marssurvive") .. "/nodes.lua")
 dofile(minetest.get_modpath("marssurvive") .. "/functions.lua")
 dofile(minetest.get_modpath("marssurvive") .. "/tools.lua")
@@ -36,7 +34,7 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 function marssurvive_space(player)
-	local pos=player:getpos().y
+	local pos=player:get_pos().y
 	if marssurvive.player_space[player:get_player_name()].inside~="cave" and pos<=-100 then
 		marssurvive.player_space[player:get_player_name()].inside="cave"
 		marssurvive_setgrav(player,marssurvive.gravity)
@@ -56,8 +54,6 @@ function marssurvive_space(player)
 			player:set_sky({r=0, g=0, b=0},"skybox",{"marssurvive_space_sky.png","marssurvive_space_sky.png^marssurvive_mars.png","marssurvive_space_sky.png","marssurvive_space_sky.png","marssurvive_space_sky.png","marssurvive_space_sky.png"})
 		end)
 	end
-
-
 end
 
 local timer = 0
@@ -72,7 +68,30 @@ end)
 
 --for doors and tools to remove whole door / to replace pos with air if enabled (overridden by marsair-mod)
 marssurvive.replacenode = function(pos)
-		minetest.set_node(pos, {name = "air"})
+	minetest.set_node(pos, {name = "air"})
 end
+
+-- stack max is 16*(8+9+9), that is the highest concentration possible (16)
+-- times the count of nodes around one node.
+-- That way a air generator can use one stack, to fill all nodes around
+gas.register_gas("oxygen", {
+	tiles = {"gas.png"},
+	inventory_image = "marssurvive_oxygen_inv.png",
+	groups={breathable_gas = 1},
+	stack_max = 416
+}, 2)
+
+spacesuit.register_spacesuit("", "spacesuit_sp_white_inv.png", 0, {"spacesuit_sp_white.png"})
+spacesuit.register_spacesuit("black", "spacesuit_sp_black_inv.png", 66, {"spacesuit_sp_black.png"})
+
+minetest.register_craft({
+	output = "spacesuit:spblack",
+	recipe = {
+		{"","spacesuit:sp","",},
+		{"", "marssurvive:shieldblock", "",},
+		{"", "marssurvive:shieldblock", ""},
+
+	},
+})
 
 print("[MOD] Marssurvive loaded! (default marssurvive)")

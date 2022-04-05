@@ -4,6 +4,7 @@ marsair.radius = 21
 --check if outside or inside
 marsair.is_inside = function(pos)
 	--TODO: make this better understandable!
+	--TODO: use raycasting
 	local ch={xp=1,xm=1,yp=1,ym=1,zp=1,zm=1, 
 			OOO=1,IOO=1,OIO=1,IIO=1, 
 			OOI=1,IOI=1,OII=1,III=1,all=14}
@@ -34,53 +35,40 @@ marsair.is_inside = function(pos)
 	return false
 end
 
--- spread air gass in a level system
---level:
---3
---23
---123
---0123
---123
---23
---3
-
-minetest.register_abm({
-	nodenames = {"air"},
-	neighbors = {"marsair:air"},
-	interval = 3,
-	chance = 1,
-	action = function(fill_pos)
-		for i=1,17,1 do
-			local source_pos=minetest.find_node_near(fill_pos, 1,{"marsair:air"})
-			if source_pos==nil then return end
-			local source_node=minetest.get_node(source_pos)
-			
-			if source_node.name=="marsair:air" then
-				local level=minetest.get_meta(source_pos):get_int("level")
-				if level>0 and level<marsair.radius then
-					minetest.set_node(fill_pos, {name = "marsair:air"})
-					minetest.get_meta(fill_pos):set_int("level",level+1)
-				end
-			end
-		end
-	end,
-})
-
-marsair.spread_air = function(pos)
+marsair.spread_air = function(pos, count)
+	print("spread air!")
+	if (count == nil) then
+		count = 16*27
+	end
+	return gas.balance(pos, "oxygen", true, count)
+	--[[
 	local success = 0
+        local minp = {x=pos.x-1, y=pos.y-1, z=pos.z-1}
+        local maxp = {x=pos.x+1, y=pos.y+1, z=pos.z+1}
+        local nodes = minetest.find_nodes_in_area(minp, maxp, {"gas:oxygen", "air"})
+	for _, fill_pos in pairs(nodes) do
+		gas.add_concentration(fill_pos, "oxygen", 16)
+		local meta = minetest.get_meta(fill_pos)
+		local concentration = meta:get_int("gas:concentration")
+		print("spread set too concentration:", concentration, fill_pos.x, fill_pos.y, fill_pos.z)
+		success = 1
+	end
+	return success]]--
+	--[[
 	for i=1,17,1 do
 		--airgenerator every time 0
-		minetest.get_meta(pos):set_int("level",0)
-		local fill_pos=minetest.find_node_near(pos,1,{"air"})
+		local fill_pos=minetest.find_node_near(pos,1,{"air", "gas:oxygen"})
 		if fill_pos~=nil then
-			minetest.set_node(fill_pos, {name = "marsair:air"})
-			minetest.get_meta(fill_pos):set_int("level",1)
+			gas.add_concentration(fill_pos, "oxygen", 16)
+			local meta = minetest.get_meta(fill_pos)
+			local concentration = meta:get_int("gas:concentration")
+			print("spread set too concentration:", concentration, fill_pos.x, fill_pos.y, fill_pos.z)
+
 			local success = 1
 		else
 			break
 		end
-	end
-	return success
+	end]]--
 end
 --end level system
 
@@ -90,27 +78,36 @@ marsair.use_air_gene = function(pos, player)
 	
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
-	local needed_air = {name="marsair:air", count=8, wear=0, metadata=""}
+	local needed_air = {name="gas:oxygen", wear=0, metadata=""}
 	
 	--check for inside/outside (try to not generate outside of a house)
 	if not marsair.is_inside(pos) then
 		minetest.get_meta(pos):set_string("infotext", "Air Generator [This area is too big (max " .. marsair.radius-1 .. "steps) you have to rebuild]")
+		minetest.sound_play("marssurvive_error", {pos=pos, gain = 1, max_hear_distance = 8,})
 		return
 	end
 	
-	--check for enougth air in inventory
-	if inv:contains_item("main", needed_air) then
-		inv:remove_item("main", needed_air)
-	else 
-		minetest.get_meta(pos):set_string("infotext", "Air Generator [not enought air u need at least 8 inside]")
+	-- check air count in inventory
+	item_list = inv:get_list("main")
+	count = 0
+	for _, item in pairs(item_list) do
+		local name = item:get_name()
+		if name == "gas:oxygen" then
+			count = count + item:get_count()
+		end
+	end
+
+	if count < 1 then
+		minetest.get_meta(pos):set_string("infotext", "Air Generator [not enought air]")
+		minetest.sound_play("marssurvive_error", {pos=pos, gain = 1, max_hear_distance = 8,})
 		return
 	end
-	
-	if marsair.spread_air(pos) then
-		--minetest.swap_node(pos, {name = "marsair:airgen" .. (i-1)})
-		minetest.get_meta(pos):set_string("infotext", "Air Generator")
-		minetest.sound_play("marssurvive_pff", {pos=pos, gain = 1, max_hear_distance = 8,}) 
-	end
+
+	needed_air.count = count - marsair.spread_air(pos, count)
+
+	minetest.get_meta(pos):set_string("infotext", "Air Generator")
+	minetest.sound_play("marssurvive_pff", {pos=pos, gain = 1, max_hear_distance = 8,})
+	inv:remove_item("main", needed_air)
 end
 
 
@@ -136,6 +133,11 @@ minetest.register_node("marsair:airgen", {
 		},
 	groups = {dig_immediate=3, tubedevice = 1, tubedevice_receiver = 1},
 	sounds = default.node_sound_stone_defaults(),
+	can_dig = function(pos,player)
+		local meta = minetest.get_meta(pos);
+		local inv = meta:get_inventory()
+		return inv:is_empty("main")
+	end,
 	on_construct = function(pos)
 		minetest.get_meta(pos):set_string("infotext", "Air Generator")
 		local node = minetest.get_node(pos)
@@ -215,11 +217,8 @@ minetest.register_node("marsair:airgen_admin", {
 			{x=0,  y=0,  z=1},
 		},
 		action_on = function (pos, node)
-			marsair.spread_air(pos)
-			return 
+			marsair.spread_air(pos, "oxygen", true)
+			return
 		end,
 	}},
 })
-
-minetest.register_alias("marssurvive:airgen_unlimited", "marsair:airgen_admin")
-minetest.register_alias("marssurvive:airgen_public", "marsair:airgen_admin")
