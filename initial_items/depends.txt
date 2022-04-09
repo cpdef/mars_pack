@@ -1,4 +1,0 @@
-marssurvive
-marsair
-spacesuit
-default

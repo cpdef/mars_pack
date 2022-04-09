@@ -1,12 +1,12 @@
 marsair = {}
 
 modfolder = minetest.get_modpath(minetest.get_current_modname())
---CONFIG:
---marsairconfig:
+-- CONFIG:
+-- marsairconfig:
 marsairconfig = {}
 dofile(modfolder.."/config.lua")
 
---flowers-config
+-- flowers-config
 dofile(modfolder.."/flower_conf.lua")
 
 marsair.is_airflower = function(pos)
@@ -23,21 +23,24 @@ marsair.is_airflower = function(pos)
 	return false
 end
 
---PIPEWORKS
+-- PIPEWORKS
 if minetest.get_modpath("pipeworks") then
 	marsair.pipeworks = true
 	marsair.after_place = pipeworks.after_place
 	marsair.after_dig = pipeworks.after_dig
 end
 
---generate air by trees
-dofile(modfolder.."/tree_air.lua")
+-- generate air by trees
+dofile(modfolder.."/plant_air.lua")
 
---AIRMAKER+AIRCLEANER
+-- AIRMAKER+AIRCLEANER
 dofile(modfolder.."/maker.lua")
 
---AIRGENE
+-- AIRGEN
 dofile(modfolder.."/airgen.lua")
+
+-- gas_display
+dofile(modfolder.."/gas_display.lua")
 
 --remove air-item dropped by pipeworks:
 if marsair.pipeworks then

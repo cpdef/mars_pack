@@ -1,23 +1,38 @@
+minetest.register_craftitem("marsair:rotor", {
+	description = "Rotor 4",
+	inventory_image = "marsair_rotor.png"
+})
+
+minetest.register_craft({
+	output = "marsair:rotor",
+	recipe = {
+		{"default:steel_ingot","","default:steel_ingot"},
+		{"","default:steel_ingot",""},
+		{"", "default:steel_ingot",""},
+	}
+})
+
 minetest.register_craft({
 	output = "marsair:airgen",
 	recipe = {
-		{"marssurvive:shieldblock","marssurvive:shieldblock","marssurvive:shieldblock"},
-		{"marssurvive:shieldblock","marssurvive:oxogen", "marssurvive:shieldblock"},
+		{"default:steel_ingot","marsair:rotor","default:steel_ingot"},
+		{"marsair:rotor","", "marsair:rotor"},
+		{"default:steel_ingot","marsair:rotor","default:steel_ingot"},
 	}
 })
 
 minetest.register_craft({
 	output = "marsair:airmaker",
 	recipe = {
-		{"marssurvive:shieldblock","marssurvive:shieldblock","marssurvive:shieldblock"},
-		{"marssurvive:shieldblock","marsair:airgen", "marssurvive:shieldblock"},
+		{"default:steel_ingot","marsair:rotor","default:steel_ingot"},
+		{"default:steel_ingot","default:dirt", "default:steel_ingot"},
 	}
 })
 
 minetest.register_craft({
-	output = "marsair:tree_air_cleaner",
+	output = "marsair:air_deflater",
 	recipe = {
-		{"marssurvive:shieldblock","marssurvive:shieldblock","marssurvive:shieldblock"},
-		{"marssurvive:shieldblock","marsair:airmaker", "marssurvive:shieldblock"},
+		{"default:steel_ingot","marsair:rotor","default:steel_ingot"},
+		{"default:steel_ingot","marsair:rotor", "default:steel_ingot"},
 	}
 })

@@ -36,39 +36,11 @@ marsair.is_inside = function(pos)
 end
 
 marsair.spread_air = function(pos, count)
-	print("spread air!")
 	if (count == nil) then
 		count = 16*27
 	end
+	minetest.sound_play("marssurvive_pff", {pos=pos, gain = 1, max_hear_distance = 8,})
 	return gas.balance(pos, "oxygen", true, count)
-	--[[
-	local success = 0
-        local minp = {x=pos.x-1, y=pos.y-1, z=pos.z-1}
-        local maxp = {x=pos.x+1, y=pos.y+1, z=pos.z+1}
-        local nodes = minetest.find_nodes_in_area(minp, maxp, {"gas:oxygen", "air"})
-	for _, fill_pos in pairs(nodes) do
-		gas.add_concentration(fill_pos, "oxygen", 16)
-		local meta = minetest.get_meta(fill_pos)
-		local concentration = meta:get_int("gas:concentration")
-		print("spread set too concentration:", concentration, fill_pos.x, fill_pos.y, fill_pos.z)
-		success = 1
-	end
-	return success]]--
-	--[[
-	for i=1,17,1 do
-		--airgenerator every time 0
-		local fill_pos=minetest.find_node_near(pos,1,{"air", "gas:oxygen"})
-		if fill_pos~=nil then
-			gas.add_concentration(fill_pos, "oxygen", 16)
-			local meta = minetest.get_meta(fill_pos)
-			local concentration = meta:get_int("gas:concentration")
-			print("spread set too concentration:", concentration, fill_pos.x, fill_pos.y, fill_pos.z)
-
-			local success = 1
-		else
-			break
-		end
-	end]]--
 end
 --end level system
 

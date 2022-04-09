@@ -2,3 +2,4 @@ default
 stairs
 gas
 spacesuit
+cratermg

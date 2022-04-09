@@ -24,7 +24,7 @@
 cratermg.use_cratermg_nodes = true
 
 -- Change sky and fog color for better ambiance
-cratermg.chamge_ambiance = true
+cratermg.chamge_ambiance = false
 
 -- Mean surface level
 cratermg.surface = 0
@@ -53,6 +53,21 @@ cratermg.noises.hill = {
 	scale = 40, seed = 1338, octaves = 4, persist = 0.7,
 }
 
+cratermg.noises.sand = {
+	spread = {x=1024, y=1024, z=1024},
+	offset = 0, scale = 10, seed = 9292, octaves = 4, persistence = 0.9
+}
+
+cratermg.noises.canyon = {
+	spread = {x=1024, y=1024, z=1024},
+	offset = 0, scale = 10, seed = 2435, octaves = 4, persistence = 1
+} -- set seed to 0!
+
+cratermg.noises.cavern = {
+	spread = {x=128, y=128, z=128},
+	offset = 0, scale = 8, seed = 564, octaves = 3, persistence = 1
+}
+
 -- Multipurpose small noise. Used to avoid perfect crater edges and hills.
 -- Should be noisy and have an offset = 0
 cratermg.noises.small = {
@@ -73,7 +88,7 @@ cratermg.noises.crack2 = {
 
 cratermg.noises.cracksize = {
 	spread = {x=256, y=256, z=256},
-    offset = 0,	scale = 0.04, seed = 1342, octaves = 1, persist = 0.5,
+    offset = 0, scale = 0.04, seed = 1342, octaves = 1, persist = 0.5,
 }
 
 -- Craters

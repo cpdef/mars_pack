@@ -105,8 +105,9 @@ function cratermg.ore_generate(minp, maxp, mapdata, area, p)
                 ores[index].nobj:get_3d_map_flat(nminp, ores[index].nmap)
 
 		ores[index].noise.seed = ores[index].noise.seed + 31415
-		local nobj2 = minetest.get_perlin_map(ores[index].noise, nlens3d)
-		nobj2:get_3d_map_flat(nminp, ores[index].nmap2)
+		ores[index].nobj2 = ores[index].nobj2 or
+			minetest.get_perlin_map(ores[index].noise, nlens3d)
+		ores[index].nobj2:get_3d_map_flat(nminp, ores[index].nmap2)
 	end
 	p.stop('oregen noises')
 
@@ -123,7 +124,7 @@ function cratermg.ore_generate(minp, maxp, mapdata, area, p)
 				local cid = mapdata[vmi]
 				for index = 1, nores do
                                         -- generate lava
-                                        if minp.y < -500 then
+                                        if y < -500 then
                                             mapdata[vmi] = l_cid
                                         end
 					if spawns_in[index] == cid and

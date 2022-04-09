@@ -92,6 +92,8 @@ local mapdata = {}
 
 local marenoise, hillnoise, smallnoise
 local crack1noise, crack2noise, cracksizenoise
+local sand2noise, sand2noise, sand3noise
+local canyonnoise, cavernnoise
 
 local maremap = {}
 local hillmap = {}
@@ -99,7 +101,15 @@ local smallmap = {}
 local crack1map = {}
 local crack2map = {}
 local cracksizemap = {}
+
 local us_hillmap = {} -- Undersampled map for gross hill detection
+local us_canyonmap = {}
+
+local sand1map = {}
+local sand2map = {}
+local sand3map = {}
+local canyonmap = {}
+local cavernmap = {}
 
 -- Standard curves functions
 local function get_peak_curve(d2, r2, dispertion)
@@ -204,6 +214,28 @@ local function get_craters_list(minp, maxp)
 		x = us_noise_maxp.x - us_noise_minp.x,
 		y = us_noise_maxp.y - us_noise_minp.y,
 	}):get_2d_map_flat(us_noise_minp, us_hillmap)
+	
+	-- Undersampled canyon noise
+	local us_canyon_noiseparam = table.copy(cratermg.noises.canyon)
+	us_canyon_noiseparam.spread = {
+		x = cratermg.noises.canyon.spread.x / us_scale,
+		y = cratermg.noises.canyon.spread.y / us_scale,
+		z = cratermg.noises.canyon.spread.z / us_scale }
+
+	-- Undersampled noise, covers larger scale maximum surface
+	local us_canyon_noise_minp = {
+		x = maxscalesize*(floor(minp.x/maxscalesize)-1)/us_scale,
+		y = maxscalesize*(floor(minp.z/maxscalesize)-1)/us_scale,
+	}
+	local us_canyon_noise_maxp = {
+		x = maxscalesize*(ceil(maxp.x/maxscalesize)+1)/us_scale,
+		y = maxscalesize*(ceil(maxp.z/maxscalesize)+1)/us_scale,
+	}
+
+	minetest.get_perlin_map(us_canyon_noiseparam, {
+		x = us_canyon_noise_maxp.x - us_canyon_noise_minp.x,
+		y = us_canyon_noise_maxp.y - us_canyon_noise_minp.y,
+	}):get_2d_map_flat(us_canyon_noise_minp, us_canyonmap)
 
 	for _, scale in pairs(scales) do
 
@@ -302,6 +334,12 @@ local function get_craters_list(minp, maxp)
 			* (us_noise_maxp.x - us_noise_minp.x)] > cratermg.surface-10
 		then
 			table.remove(craters, index)
+		elseif not incrater and
+			math.abs(us_canyonmap[1 + floor(crater.x/us_scale) - us_canyon_noise_minp.x
+			+ (floor(crater.z/us_scale) - us_canyon_noise_minp.y)
+			* (us_canyon_noise_maxp.x - us_canyon_noise_minp.x)]) < 4
+		then
+			table.remove(craters, index)
 		else
 			index = index + 1
 		end
@@ -310,6 +348,7 @@ local function get_craters_list(minp, maxp)
 	return craters
 end
 
+local test_max = 0
 -- Map generation
 minetest.register_on_generated(function (minp, maxp, blockseed)
 	local tstart = os.clock()
@@ -346,35 +385,23 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 	crack2noise = crack2noise or minetest.get_perlin_map(cratermg.noises.crack2, chulens3d)
 	cracksizenoise = cracksizenoise or minetest.get_perlin_map(cratermg.noises.cracksize, chulens3d)
 
-	sand_noise_params = {
-		spread = {x=1024, y=1024, z=1024},
-		offset = 0, scale = 10, seed = 0, octaves = 4, persistence = 0.9
-	}
-
-	local sand1map = {}
-	sand1noise = minetest.get_perlin_map(sand_noise_params, chulens3d)
+	cratermg.noises.sand.seed = 0
+	sand1noise = sand1noise or minetest.get_perlin_map(cratermg.noises.sand, chulens3d)
 	sand1noise:get_2d_map_flat({x=minp.x,y=minp.z}, sand1map)
 
-	local sand2map = {}
-	sand_noise_params.seed = 1
-	sand2noise = minetest.get_perlin_map(sand_noise_params, chulens3d)
+	cratermg.noises.sand.seed = 1
+	sand2noise = sand2noise or minetest.get_perlin_map(cratermg.noises.sand, chulens3d)
 	sand2noise:get_2d_map_flat({x=minp.x,y=minp.z}, sand2map)
 	
-	local sand3map = {}
-	sand_noise_params.seed = 2
-	sand3noise = minetest.get_perlin_map(sand_noise_params, chulens3d)
+	cratermg.noises.sand.seed = 2
+	sand3noise = sand3noise or minetest.get_perlin_map(cratermg.noises.sand, chulens3d)
 	sand3noise:get_2d_map_flat({x=minp.x,y=minp.z}, sand3map)
 
-
-	canyon_noise_params = {
-		spread = {x=1024, y=1024, z=1024},
-		offset = 0, scale = 10, seed = 0, octaves = 4, persistence = 0.9
-	}
-
-	local canyonmap = {}
-	canyonnoise = minetest.get_perlin_map(canyon_noise_params, chulens3d)
+	canyonnoise = canyonnoise or minetest.get_perlin_map(cratermg.noises.canyon, chulens3d)
 	canyonnoise:get_2d_map_flat({x=minp.x,y=minp.z}, canyonmap)
 	
+	cavernnoise = cavernnoise or minetest.get_perlin_map(cratermg.noises.cavern, chulens3d)
+	cavernnoise:get_3d_map_flat(minp, cavernmap)
 
 	marenoise:get_2d_map_flat({x=minp.x,y=minp.z}, maremap)
 	hillnoise:get_2d_map_flat({x=minp.x,y=minp.z}, hillmap)
@@ -409,6 +436,15 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 	local n3dxinc = 1
 	local n3dyinc = chulens3d.x
 	local n3dzinc = chulens3d.x * chulens3d.y
+        
+	-- for underground blobs
+	local m_cid = minetest.get_content_id("default:meselamp")
+        local g_cid = minetest.get_content_id("default:glass")
+	local nix = 1
+	local block_len = 32
+	local max_dist = 15
+	local block_y_factor = 64000/block_len
+	local block_z_factor = (64000^2)/block_len
 
 	for z = minp.z, maxp.z do
 		vmix = vmiz
@@ -419,24 +455,35 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 			local hill_level = hillmap[n2d] + smallmap[n2d] * 10
 			local mare_level = maremap[n2d]
 			local canyon_level = canyonmap[n2d]
-			if (math.abs(canyon_level) < 2) then
-				down = (2-math.abs(canyon_level))^4
-				if (down > 1) then
-					down = 1+down*0.01
-				end
-				mare_level = mare_level-20*down
-			end
 			local ground_level = max(hill_level, mare_level)
+
+			local canyon_size = 1.5
+			if (math.abs(canyon_level) < canyon_size) then
+				-- this is an value between 0 and 1
+				-- 1 is the middle of the canyon
+				-- 0 is the border
+				local c_lvl_normal = (canyon_size-math.abs(canyon_level))/canyon_size
+				local down = math.sin(c_lvl_normal*(math.pi/2))^(3+smallmap[n2d])
+				canyon_level = ground_level-25*down+smallmap[n2d]*5*c_lvl_normal
+				ground_level = min(canyon_level, max(hill_level, mare_level))
+			end
+			local mare_hill_max = ground_level
 
 			vmiy = vmix
 			for y = minp.y, maxp.y do
-				if y < floor(hill_level) then
+				--[[if y < floor(hill_level) then
 					mapdata[vmiy] = c.hills
 				elseif y < floor(mare_level) then
 					mapdata[vmiy] = c.mare
 				else
 					mapdata[vmiy] = c.vacuum
+				end]]--
+				if y < floor(ground_level) then
+					mapdata[vmiy] = c.hills
+				else
+					mapdata[vmiy] = c.vacuum
 				end
+
 				vmiy = vmiy + yinc
 			end
 			p.stop('base generation')
@@ -486,24 +533,65 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 
 			--Dust generation
 			local fgl = floor(ground_level)
+			local s1 = math.abs(sand1map[n2d])
+			local s2 = math.abs(sand2map[n2d])
+			local s_pebble = math.abs(sand3map[n2d])
+			local dust_thickness = 2
+			local rnd = PcgRandom(x+z*64000)
+
+			-- ice
+
+			local place_ice = false
+			if s1 > s2+8 and s1 > s_pebble+8 and s1 > 10 and hill_level < -10 then
+				place_ice = true
+			end
+
+
 			for y = minp.y, maxp.y do
-				if y >= fgl and y < fgl+2 then
-					vmiy = vmix + (y - minp.y) * yinc
-					rnd = PcgRandom(x+z*32000*32000)
-					--vmiy = vmix + y * yinc
-					local s1 = math.abs(sand1map[n2d])+rnd:rand_normal_dist(-1,1)
-					local s2 = math.abs(sand2map[n2d])+rnd:rand_normal_dist(-1,1)
-					local s3 = math.abs(sand3map[n2d])+rnd:rand_normal_dist(-1,1)
-					--local ice = max(s1, s2)
-					--if (s1 > 15 or s2 > 15) then
-					--if (math.abs(ice) > 13 and (not in_crater)) then
-					--	mapdata[vmiy] = c.ice
-					if (s1 > s2 and s1 > s3) then
-						mapdata[vmiy] = c.dust
-					elseif (s2 > s1 and s2 > s3) then
-						mapdata[vmiy] = c.dust2
+				vmiy = vmix + (y - minp.y) * yinc
+				if y >= fgl and y <= fgl+dust_thickness then
+					s1 = s1 + rnd:rand_normal_dist(-1,1);
+					s2 = s2 + rnd:rand_normal_dist(-1,1);
+					s_pebble = s_pebble + rnd:rand_normal_dist(-1,1);
+					local frozen = (s1 > s2+6 and s1 > s_pebble+6)
+
+					if y == fgl+dust_thickness then -- top node
+						if s_pebble > s1 and s_pebble > s2 then
+							local pebble = rnd:next(1,12);
+							if pebble > 0 and pebble < 4 then
+								mapdata[vmiy] = c.pebble[pebble]
+							end
+						elseif place_ice then
+							if rnd:next(1,5) == 1 then
+								mapdata[vmiy] = c.ice
+							else
+								mapdata[vmiy] = c.dry_ice
+							end
+						end
 					else
-						mapdata[vmiy] = c.dust3
+						if s1 > s2 and s1 > s_pebble  then
+							if place_ice then
+								if rnd:next(1,5) == 1 then
+									mapdata[vmiy] = c.ice
+								else
+									mapdata[vmiy] = c.dry_ice
+								end
+							elseif frozen then
+								mapdata[vmiy] = c.dust_frozen
+							else
+								mapdata[vmiy] = c.dust1
+							end
+						elseif s2 > s1 and s2 > s_pebble then
+							mapdata[vmiy] = c.dust2
+						else
+							mapdata[vmiy] = c.dust_pebble
+						end
+					end
+				elseif y >= fgl and place_ice and y <= floor(mare_hill_max)+dust_thickness then
+					if rnd:next(1,5) == 1 then
+						mapdata[vmiy] = c.ice
+					else
+						mapdata[vmiy] = c.dry_ice
 					end
 				end
 			end
@@ -523,6 +611,68 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 				vmiy = vmiy + yinc
 			end
 			p.stop('cave generation')
+			
+			vmiy = vmix
+			n3dy = n3dx
+			for y = minp.y, maxp.y do
+				if y < ground_level-10 then
+					local block = {
+						x=floor(x/block_len)*block_len,
+						y=floor(y/block_len)*block_len,
+						z=floor(z/block_len)*block_len,
+					}
+					--print(x, block.x, y, block.y, z, block.z)
+					local rnd_block = PcgRandom(
+						block.x
+						+ block.y*block_y_factor
+						+ block.z*block_z_factor
+					)
+					-- chance of 30%
+					-- after 3 block lenght (around 100m) the total chance
+					-- that you found at least one blob is around 60%
+					if rnd_block:next(0,9) < 3 then
+						local start = max_dist
+						local stop = block_len-max_dist
+						local m = vector.new(
+							block.x+rnd_block:next(start,stop),
+							block.y+rnd_block:next(start,stop),
+							block.z+rnd_block:next(start,stop)
+						)
+						local v = vector.new(x,y,z)
+						local dist = (
+							vector.distance(m,v)
+							+ (cavernmap[n3dy])^4
+						)
+						if dist < max_dist then
+							if (y >= m.y) then
+								mapdata[vmiy] = c.vacuum
+							elseif y < -200 then
+								mapdata[vmiy] = c.water
+							else
+								local rnd = PcgRandom(
+									x+y*block_len+z*block_len^2
+									+rnd_block:next(1,block_len)*1000
+								)
+								if rnd:next(1,3) == 1 then
+									mapdata[vmiy] = c.ice
+								else
+									mapdata[vmiy] = c.dry_ice
+								end
+							end
+						else
+				--			if mapdata[vmi] == c.stone then
+				--				mapdata[vmiy] = g_cid;
+				--			end
+						end
+					else
+					--	if mapdata[vmi] == c.stone then
+					--		mapdata[vmiy] = g_cid;
+					--	end
+					end
+				end
+				n3dy = n3dy + n3dyinc
+				vmiy = vmiy + yinc
+			end
 
 			n2d = n2d + 1
 			n3dx = n3dx + n3dxinc
@@ -538,26 +688,6 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 	p.start('oregen')
 	cratermg.ore_generate(minp, maxp, mapdata, area, p)
 	p.stop('oregen')
-
-
-        -- lava test
-        --[[
-        local s_cid = minetest.get_content_id("cratermg:stone")
-        if (minp.y < -500) then
-            local idx = 0
-            for z = minp.z, maxp.z do
-                for y = minp.y, maxp.y do
-                    for x = minp.x, maxp.x do
-                        if mapdata[idx] == s_cid then
-                            mapdata[idx] = l_cid
-                        end
-                        idx = idx + 1;
-                    end
-                end
-            end
-        end
-        ]]--
-
 
 	-- Save to map
 	p.start('save')

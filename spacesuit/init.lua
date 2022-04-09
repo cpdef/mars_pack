@@ -1,6 +1,6 @@
 --NEW (for sp registration)
 
-spacesuit = {breath_timer=0,skin={}}
+spacesuit = {breath_timer=0,skin={},has_spacesuit={}}
 spacesuit.registered_spacesuits = {}
 spacesuit.registered_breathable_gas = {}
 
@@ -90,20 +90,27 @@ minetest.register_craft({
 })
 
 --FUNCTIONS
-local damage = function(node, player)
+--[[local drown = function(node, player)
+	local bubbles = player:get_breath()
+	player:set_breath(bubbles-1)
 	if node=="air" then 
 		--(no spacesuit and in default air: lose 8 hp)
 		player:set_hp(player:get_hp()-8)
-	elseif minetest.get_item_group(node, "breathable_gas") == 0 then						--(no spacesuit and inside something else: lose 1 hp)
+	elseif minetest.get_item_group(node, "breathable_gas") == 0 then
+		--(no spacesuit and inside something else: lose 1 hp)
 		player:set_hp(player:get_hp()-1)
 	end
-end
+end]]--
 
 minetest.register_globalstep(function(dtime)
-	spacesuit.breath_timer=spacesuit.breath_timer+dtime
-	if spacesuit.breath_timer<2 then return end
+	spacesuit.breath_timer = spacesuit.breath_timer+dtime
+	if spacesuit.has_spacesuit[player] == true then
+		player:set_breath(11)
+	end
+	if spacesuit.breath_timer < 2 then return end
 	spacesuit.breath_timer=0
 	for i, player in pairs(minetest.get_connected_players()) do
+		spacesuit.has_spacesuit[player] = false
 		local n=player:getpos()
 		n=minetest.get_node({x=n.x,y=n.y+1,z=n.z}).name
 		local inv=player:get_inventory()
@@ -120,6 +127,7 @@ minetest.register_globalstep(function(dtime)
 					if new_wear >= 65533 then new_wear = 65533 end
 					set_wear_sp(inv, new_wear)
 					player:set_breath(11)
+					spacesuit.has_spacesuit[player] = true
 				else
 					local bottle = {name="spacesuit:air_gasbottle", count=1, wear=0, metadata=""}
 					print('bottle', inv:contains_item("main", bottle))
@@ -135,9 +143,7 @@ minetest.register_globalstep(function(dtime)
 						else
 							minetest.chat_send_player(player:get_player_name(), "Warning: have none air-gasbottle left!")
 						end
-					else
-						--no bottle, no wear 
-						damage(n, player)
+						spacesuit.has_spacesuit[player] = true
 					end
 				end
 			end
@@ -149,7 +155,6 @@ minetest.register_globalstep(function(dtime)
 			if (spacesuit.skin[player:get_player_name()] ~= nil) then
 				player_deattach_sp(player)
 			end
-			damage(n, player)
 		end
 	end
 end)
@@ -164,5 +169,9 @@ end)
 minetest.register_on_leaveplayer(function(player)
 	spacesuit.skin[player:get_player_name()]=nil
 end)
+
+minetest.override_item("air", {
+        drowning = 1
+})
 
 print("[MOD] Spacesuit loaded!")

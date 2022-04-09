@@ -42,6 +42,17 @@ minetest.register_abm({
 	end
 })
 
+minetest.register_abm({
+	label = "flora air generation",
+	nodenames = {"group:flora", "group:plant"},
+	neighbors = {"air", "gas:oxygen"},
+	interval = marsairconfig.flower_air_time,
+	chance = marsairconfig.flower_air_chance,
+	action = function(pos)
+		gas.balance(pos, "oxygen", true, 8)
+	end
+})
+
 
 marsair.register_airleaves("default:leaves", "default:tree")
 marsair.register_airleaves("default:bush_leaves", "default:bush_stem")

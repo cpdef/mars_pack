@@ -42,7 +42,7 @@ end
 
 if cratermg.chamge_ambiance then
 	minetest.register_on_joinplayer(function(player)
-		player:set_sky("#e2aa8c", "plain")
-		player:set_clouds({density=0})
+--		player:set_sky("#e2aa8c", "plain")
+--		player:set_clouds({density=0})
 	end)
 end

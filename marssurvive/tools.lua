@@ -35,3 +35,18 @@ minetest.register_tool("marssurvive:diglazer", {
 		return itemstack
 	end
 })
+
+minetest.register_tool("marssurvive:pointed_pebble", {
+	description = "Pointed pebble",
+	inventory_image = "marssurvive_pointed_pebble.png",
+	tool_capabilities = {
+		full_punch_interval = 1.2,
+		max_drop_level=0,
+		groupcaps={
+			cracky = {times={[3]=3.60, [2]=4.60}, uses=10},
+		},
+		damage_groups = {fleshy=2},
+	},
+	sound = {breaks = "default_tool_breaks"},
+	groups = {pickaxe = 1, flammable = 2}
+})

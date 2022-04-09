@@ -269,13 +269,6 @@ minetest.register_node("marssurvive:steelwallblock", {
 	sounds = default.node_sound_stone_defaults(),
 })
 
-minetest.register_node("marssurvive:clayblock", {
-	description = "Clayblock",
-	tiles = {"default_clay.png^[colorize:#863710aa"},
-	groups = {crumbly = 3},
-	sounds = default.node_sound_stone_defaults(),
-})
-
 minetest.register_node(":default:cloud", {
 	description = "Cloud",
 	tiles = {"default_cloud.png"},

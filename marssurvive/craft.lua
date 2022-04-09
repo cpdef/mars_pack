@@ -1,18 +1,44 @@
 
 minetest.register_craft({
+	output = "default:sand",
+	recipe = {
+		{"group:sand"},
+	}
+})
+
+minetest.register_craft({
+	output = "default:gravel",
+	recipe = {
+		{"cratermg:dust_pebble"},
+	}
+})
+
+minetest.register_craft({
+	output = "marssurvive:pointed_pebble",
+	recipe = {
+		{"cratermg:pebble"},
+	}
+})
+minetest.register_craft({
+	output = "marssurvive:pointed_pebble",
+	recipe = {
+		{"cratermg:pebble_small"},
+	}
+})
+minetest.register_craft({
+	output = "marssurvive:pointed_pebble",
+	recipe = {
+		{"cratermg:pebble_big"},
+	}
+})
+
+minetest.register_craft({
 	output = "marssurvive:trapdoor_1 2",
 	recipe = {
 		{"marssurvive:warning","marssurvive:shieldblock",""},
 		{"marssurvive:warning","marssurvive:shieldblock", ""},
 	}
 })
-
-
-
---minetest.register_craft({
---	output = "default:sand",
---	recipe = {"group:mars_sand"},
---})
 
 minetest.register_craft({
 	output = "marssurvive:smart_glasspane_side 2",
@@ -52,29 +78,10 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "marssurvive:warning",
+	output = "marssurvive:warning 4",
 	recipe = {
-		{"default:coal_lump","marssurvive:clayblock",""},
-		{"marssurvive:clayblock","default:coal_lump", ""},
-	}
-})
-
-
-minetest.register_craft({
-	output = "marssurvive:sandpick",
-	recipe = {
-		{"default:sandstone","default:sandstone","default:sandstone"},
-		{"","default:sandstone", ""},
-		{"","default:sandstone", ""},
-	}
-})
-
-minetest.register_craft({
-	output = "default:dirt 3",
-	recipe = {
-		{"marssurvive:clayblock","marssurvive:clayblock","marssurvive:clayblock"},
-		{"marssurvive:clayblock","marssurvive:clayblock", "marssurvive:clayblock"},
-		{"marssurvive:clayblock","marssurvive:clayblock","marssurvive:clayblock"},
+		{"default:coal_lump","cratermg:dust1",""},
+		{"cratermg:dust1","default:coal_lump", ""},
 	}
 })
 
@@ -90,7 +97,7 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "marssurvive:shieldblock 4",
 	recipe = {
-		{"default:steel_ingot","default:steel_ingot","default:iron_lump"},
+		{"default:steel_ingot","default:steel_ingot",""},
 		{"default:steel_ingot","default:steel_ingot", ""},
 	}
 })
@@ -98,7 +105,14 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "default:stone",
 	recipe = {
-		{"marssurvive:sand","marssurvive:clayblock","marssurvive:sand"},
+		{"cratermg:stone"},
+	}
+})
+
+minetest.register_craft({
+	output = "default:cobble_stone",
+	recipe = {
+		{"cratermg:sediments"},
 	}
 })
 
@@ -120,38 +134,10 @@ minetest.register_craft({
 	}
 })
 
-
-minetest.register_craft({
-	output = 'marssurvive:clayblock',
-	recipe = {
-		{'default:clay_lump','default:clay_lump',''},
-
-	}
-})
-
-minetest.register_craft({
-	output = 'default:clay_lump 2',
-	recipe = {
-		{'marssurvive:clayblock',},
-
-	}
-})
-
--- cooking:
-
-minetest.register_craft({
-	output = 'default:furnace',
-	recipe = {
-		{'group:cobble', 'group:cobble', 'group:cobble'},
-		{'group:cobble', '', 'group:cobble'},
-		{'group:cobble', 'group:cobble', 'group:cobble'},
-	}
-})
-
 minetest.register_craft({
 	type = "cooking",
 	output = "default:water_source",
-	recipe = "marssurvive:ice",
+	recipe = "cratermg:ice",
 })
 
 minetest.register_craft({
@@ -172,4 +158,81 @@ minetest.register_craft({
 	recipe = "group:mars_sand",
 })
 
+minetest.register_craftitem("marssurvive:minerals", {
+	description = "Minerals",
+	inventory_image = "marssurvive_minerals.png"
+})
 
+minetest.register_craft({
+	output = "default:dirt",
+	recipe = {
+		{"marssurvive:minerals","cratermg:dust1"}
+	}
+})
+
+minetest.register_craft({
+	output = "default:dirt",
+	recipe = {
+		{"marssurvive:minerals","cratermg:dust2"}
+	}
+})
+
+minetest.override_item("cratermg:pebble", {
+    drop = {
+        max_items = 1,
+        items = {
+            {
+                rarity = 10,
+                items = {"marssurvive:minerals"},
+            },
+            {
+                rarity = 2,
+                items = {"marssurvive:pointed_pebble"},
+            },
+            {
+                rarity = 1,
+                items = {"cratermg:pebble"},
+            }
+        },
+    },
+})
+
+minetest.override_item("cratermg:pebble_small", {
+    drop = {
+        max_items = 1,
+        items = {
+            {
+                rarity = 10,
+                items = {"marssurvive:minerals"},
+            },
+            {
+                rarity = 2,
+                items = {"marssurvive:pointed_pebble"},
+            },
+            {
+                rarity = 1,
+                items = {"cratermg:pebble_small"},
+            }
+        },
+    },
+})
+
+minetest.override_item("cratermg:pebble_big", {
+    drop = {
+        max_items = 1,
+        items = {
+            {
+                rarity = 10,
+                items = {"marssurvive:minerals"},
+            },
+            {
+                rarity = 2,
+                items = {"marssurvive:pointed_pebble"},
+            },
+            {
+                rarity = 1,
+                items = {"cratermg:pebble_big"},
+            }
+        },
+    },
+})

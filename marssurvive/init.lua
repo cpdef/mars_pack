@@ -9,7 +9,10 @@ else
 end
 
 dofile(minetest.get_modpath("marssurvive") .. "/nodes.lua")
+dofile(minetest.get_modpath("marssurvive") .. "/furnace.lua")
 dofile(minetest.get_modpath("marssurvive") .. "/functions.lua")
+dofile(minetest.get_modpath("marssurvive") .. "/tree.lua")
+dofile(minetest.get_modpath("marssurvive") .. "/random_seed.lua")
 dofile(minetest.get_modpath("marssurvive") .. "/tools.lua")
 dofile(minetest.get_modpath("marssurvive") .. "/bags.lua")
 dofile(minetest.get_modpath("marssurvive") .. "/craft.lua")
@@ -39,19 +42,55 @@ function marssurvive_space(player)
 		marssurvive.player_space[player:get_player_name()].inside="cave"
 		marssurvive_setgrav(player,marssurvive.gravity)
 		minetest.after(0.1,function()
-			player:set_sky(000000, "plain", {}, false)
+			player:set_sky({
+				type="plain",
+				basecolor= "#000000",
+				clouds=false
+			})
 		end)
 	elseif marssurvive.player_space[player:get_player_name()].inside~="mars" and (pos>-100) and (pos<=1000) then
 		marssurvive.player_space[player:get_player_name()].inside="mars"
 		marssurvive_setgrav(player,marssurvive.gravity)
 		minetest.after(0.1,function()
-			player:set_sky({r=219, g=168, b=117},"plain",{}, false)
+			player:set_sky({
+				type="regular",
+				basecolor= "#dba875",
+				clouds=false,
+				sky_color= {
+					day_sky="#dba875",
+					day_horizon="#dba875",
+					dawn_sky="#bb7799",
+					dawn_horizon="#bb7799",
+					fog_sun_tint="#4444aa"
+				}
+			})
+			player:set_sun({
+				visible = true,
+				--tonemap = "sun_tonemap_mars.png",
+				sunrise = "sunrisebg_mars.png"
+			})
+			player:set_moon({
+				visible = true,
+				scale = 0.5
+			})
 		end)
 	elseif marssurvive.player_space[player:get_player_name()].inside~="space" and pos>1000 then
 		marssurvive.player_space[player:get_player_name()].inside="space"
 		marssurvive_setgrav(player,0.05)
 		minetest.after(0.1,function()
-			player:set_sky({r=0, g=0, b=0},"skybox",{"marssurvive_space_sky.png","marssurvive_space_sky.png^marssurvive_mars.png","marssurvive_space_sky.png","marssurvive_space_sky.png","marssurvive_space_sky.png","marssurvive_space_sky.png"})
+			player:set_sky({
+				type = "skybox",
+				basecolor = "#000000",
+				clouds = false,
+				textures = {
+					"marssurvive_space_sky.png",
+					"marssurvive_space_sky.png^marssurvive_mars.png",
+					"marssurvive_space_sky.png",
+					"marssurvive_space_sky.png",
+					"marssurvive_space_sky.png",
+					"marssurvive_space_sky.png"
+				}
+			})
 		end)
 	end
 end
