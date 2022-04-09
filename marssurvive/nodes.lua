@@ -210,35 +210,6 @@ on_rightclick = function(pos, node, player, itemstack, pointed_thing)
 	end,
 })
 
-local nodes_g_s={
-{"#cf411bff","small",0.25},
-{"#cf411bff","medium",0.3},
-}
-
-for i = 1, #nodes_g_s, 1 do
-
-minetest.register_node("marssurvive:stone_" .. nodes_g_s[i][2], {
-	description = "Stone " .. nodes_g_s[i][2],
-	drawtype = "mesh",
-	mesh = "stone1.obj",
-	visual_scale = nodes_g_s[i][3],
-	tiles = {"default_desert_stone.png^[colorize:#cf7d67ff"},
-	groups = {dig_immediate=3,not_in_creative_inventory=0,stone=1},
-	paramtype = "light",
-	paramtype2 = "facedir",
-	sounds = default.node_sound_stone_defaults(),
-	sunlight_propagates = true,
-	is_ground_content = false,
-	selection_box = {
-		type = "fixed",
-		fixed = {-0.3, -0.5, -0.3, 0.3, 0.-0.25, 0.3}
-	},
-collision_box = {
-		type = "fixed",
-		fixed = {{-0.3, -0.5, -0.3, 0.3, 0.-0.25, 0.3},}},
-})
-end
-
 minetest.register_node("marssurvive:warning", {
 	description = "Warning tape block",
 	tiles = {"marssurvive_warntape.png"},
@@ -277,4 +248,47 @@ minetest.register_node(":default:cloud", {
 	groups = {not_in_creative_inventory = 1},
 	--drawtype = "airlike",
 })
+
+minetest.register_node("marssurvive:led", {
+	description = "Light emitting diode (LED)",
+	tiles = {"marssurvive_led.png"},
+	inventory_image = "marssurvive_led.png",
+	wield_image = "marssurvive_led.png",
+	drawtype = "signlike",
+	groups = {snappy = 3, attached_node = 2},
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	walkable = false,
+	sunlight_propagates = true,
+	selection_box = {
+			  type = "wallmounted",
+			  wall_bottom = {-0.5, -0.5, -0.5, 0.5, -5/32, 0.5}
+			},
+
+	light_source = 12,
+})
+
+minetest.register_node("marssurvive:power_led", {
+	description = "Highpower Light emitting diode (LED)",
+	tiles = {"marssurvive_power_led.png"},
+	inventory_image = "marssurvive_power_led.png",
+	wield_image = "marssurvive_power_led.png",
+	drawtype = "signlike",
+	groups = {snappy = 3, attached_node = 2},
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	walkable = false,
+	sunlight_propagates = true,
+	selection_box = {
+			  type = "wallmounted",
+			  wall_bottom = {-0.5, -0.5, -0.5, 0.5, -5/32, 0.5}
+			},
+
+	light_source = 14,
+})
+
+--minetest.clear_craft({output="default:torch"})
+minetest.register_alias_force("default:torch", "marssurvive:led")
+minetest.register_alias_force("default:torch_wall", "marssurvive:led")
+minetest.register_alias_force("default:torch_ceiling", "marssurvive:led")
 

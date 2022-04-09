@@ -11,15 +11,15 @@ dofile(modfolder.."/flower_conf.lua")
 
 marsair.is_airflower = function(pos)
 	local nodename = minetest.get_node(pos).name
+        if (minetest.get_item_group(nodename, "flora")) > 0 then
+            return true
+        end
         if (minetest.get_item_group(nodename, "plant")) > 0 then
             return true
         end
         if (minetest.get_item_group(nodename, "seed")) > 0 then
             return true
         end
-	for _, flower in pairs(marsair.air_flowers) do
-		if nodename == flower then return true end
-	end
 	return false
 end
 

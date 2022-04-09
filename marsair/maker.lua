@@ -144,8 +144,8 @@ minetest.register_node("marsair:pot_lid", {
 		"airmaker_lid_glass.png",
 		"airmaker_lid_glass.png"
 	},
-	inventory_image = "armaker_lid_inv.png",
-	wield_image = "armaker_lid_inv.png",
+	inventory_image = "airmaker_lid_inv.png",
+	wield_image = "airmaker_lid_inv.png",
 	use_texture_alpha = true,
 	drawtype = "nodebox",
 	paramtype = "light",

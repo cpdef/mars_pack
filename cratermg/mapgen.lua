@@ -587,7 +587,9 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 							mapdata[vmiy] = c.dust_pebble
 						end
 					end
-				elseif y >= fgl and place_ice and y <= floor(mare_hill_max)+dust_thickness then
+				elseif y >= fgl and place_ice
+					and y <= floor(mare_hill_max)+dust_thickness 
+					and y <= fgl + 6 then
 					if rnd:next(1,5) == 1 then
 						mapdata[vmiy] = c.ice
 					else
@@ -612,6 +614,8 @@ minetest.register_on_generated(function (minp, maxp, blockseed)
 			end
 			p.stop('cave generation')
 			
+
+			-- cavern gen
 			vmiy = vmix
 			n3dy = n3dx
 			for y = minp.y, maxp.y do

@@ -2,11 +2,12 @@
 minetest.register_on_newplayer(function(player)
 	local inv=player:get_inventory()
 	inv:add_item("main","spacesuit:air_gasbottle")
-	inv:add_item("main","marsair:airgen")
+	inv:add_item("main","marssurvive:led 8")
 	inv:add_item("main","flowers:geranium 3")
 	inv:add_item("main","marssurvive:random_seed 20")
 	inv:add_item("main","default:apple 20")
 	inv:add_item("main","gas:oxygen 416")
+	inv:add_item("main","marsair:airgen")
 
 	-- enforce spacesuit stack one:
 	local stack_one = inv:get_stack("main", 1)

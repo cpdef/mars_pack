@@ -19,13 +19,13 @@ gas.default_def = {
 }
 
 function gas.get_concentration(pos)
-    print("get")
+    --print("get")
     local meta = minetest.get_meta(pos)
     return meta:get_int("gas:concentration")
 end
 
 function gas.set_concentration(pos, gas_name, value)
-    print("set")
+    --print("set")
     local remainder = 0
     if value > gas.max_concentration then
         remainder = value-gas.max_concentration
@@ -54,7 +54,7 @@ function gas.check_modified(pos)
 end
 
 function gas.get_name(pos)
-    print("name")
+    --print("name")
     if (minetest.get_item_group(minetest.get_node(pos).name, "gas") == 0) then
         return nil
     end
@@ -62,7 +62,7 @@ function gas.get_name(pos)
 end
 
 function gas.add_concentration(pos, gas_name, value)
-    print("add")
+    --print("add")
     local node = minetest.get_node(pos)
     if gas.get_name(pos) ~= nil then
         local meta = minetest.get_meta(pos)

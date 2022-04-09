@@ -1,10 +1,10 @@
 minetest.register_craftitem("marsair:rotor", {
-	description = "Rotor 4",
+	description = "Rotor",
 	inventory_image = "marsair_rotor.png"
 })
 
 minetest.register_craft({
-	output = "marsair:rotor",
+	output = "marsair:rotor 4",
 	recipe = {
 		{"default:steel_ingot","","default:steel_ingot"},
 		{"","default:steel_ingot",""},

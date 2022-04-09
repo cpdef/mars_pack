@@ -182,6 +182,10 @@ minetest.override_item("cratermg:pebble", {
         max_items = 1,
         items = {
             {
+                rarity = 30,
+                items = {"marssurvive:random_seed"},
+            },
+            {
                 rarity = 10,
                 items = {"marssurvive:minerals"},
             },
@@ -201,6 +205,10 @@ minetest.override_item("cratermg:pebble_small", {
     drop = {
         max_items = 1,
         items = {
+            {
+                rarity = 30,
+                items = {"marssurvive:random_seed"},
+            },
             {
                 rarity = 10,
                 items = {"marssurvive:minerals"},
@@ -222,6 +230,10 @@ minetest.override_item("cratermg:pebble_big", {
         max_items = 1,
         items = {
             {
+                rarity = 30,
+                items = {"marssurvive:random_seed"},
+            },
+            {
                 rarity = 10,
                 items = {"marssurvive:minerals"},
             },
@@ -235,4 +247,31 @@ minetest.override_item("cratermg:pebble_big", {
             }
         },
     },
+})
+
+--led
+minetest.register_craftitem("marssurvive:silicon", {
+	description = "mars silicon",
+	image = "marssurvive_silicon.png"
+})
+
+minetest.register_craft({
+	output = 'marssurvive:silicon 8',
+	recipe = {
+		{'', '', ''},
+		{'group:sand', 'group:sand', ''},
+		{'group:sand', 'default:iron_lump', ''},
+	}
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "marssurvive:led 4",
+	recipe = {"marssurvive:silicon", "default:glass"},
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "marssurvive:power_led 1",
+	recipe = {"marssurvive:led", "marssurvive:led", "marssurvive:led", "marssurvive:led"},
 })
