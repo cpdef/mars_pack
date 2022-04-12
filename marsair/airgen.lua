@@ -44,7 +44,6 @@ marsair.spread_air = function(pos, count)
 end
 --end level system
 
-
 marsair.use_air_gene = function(pos, player)
 	if player and minetest.is_protected(pos,player:get_player_name()) then return end
 	
@@ -61,7 +60,7 @@ marsair.use_air_gene = function(pos, player)
 	
 	-- check air count in inventory
 	item_list = inv:get_list("main")
-	count = 0
+	local count = 0
 	for _, item in pairs(item_list) do
 		local name = item:get_name()
 		if name == "gas:oxygen" then
@@ -89,6 +88,27 @@ if marsair.pipeworks then
 	airgen_side_texture = "mars_airgen_pipe.png"
 end
 
+
+local breathable_gas_refill = function(pos, node)
+	local count = 0
+	local meta = minetest.get_meta(pos)
+	local inv = meta:get_inventory()
+	item_list = inv:get_list("main")
+	for _, item in pairs(item_list) do
+		local name = item:get_name()
+		if name == "gas:oxygen" then
+			count = count + item:get_count()
+		end
+	end
+	if count > 10 then
+		local needed_air = {name="gas:oxygen", wear=0, metadata="", count=10}
+		inv:remove_item("main", needed_air)
+		return true
+	else
+		return false
+	end
+end
+
 minetest.register_node("marsair:airgen", {
 	description = "Air Generator",
 	tiles = {"marssurvive_shieldblock.png^default_obsidian_glass.png", 
@@ -103,7 +123,7 @@ minetest.register_node("marsair:airgen", {
 				},
 			}
 		},
-	groups = {dig_immediate=3, tubedevice = 1, tubedevice_receiver = 1},
+	groups = {dig_immediate=3, tubedevice = 1, tubedevice_receiver = 1, breathable_gas_refill = 1},
 	sounds = default.node_sound_stone_defaults(),
 	can_dig = function(pos,player)
 		local meta = minetest.get_meta(pos);
@@ -114,26 +134,38 @@ minetest.register_node("marsair:airgen", {
 		minetest.get_meta(pos):set_string("infotext", "Air Generator")
 		local node = minetest.get_node(pos)
 		local meta = minetest.get_meta(pos)
-		meta:set_string("formspec", 	"invsize[8,9;]"..
-								"list[current_name;main;0,1;4,1;]"..
-								"list[current_player;main;0,5;8,4;]"..
-								"label[0,0;Air Generator]"..
-								"button_exit[0,3;3,0.7;generate;generate Air]"..
-								"listring[current_player;main]"
+		meta:set_string("formspec", 	"size[8,9;]"..
+			"list[current_name;main;0,1;4,1;]"..
+			"list[current_player;main;0,5;8,4;]"..
+			"label[0,0;Air Generator]"..
+			"button_exit[0,3;3,0.7;generate;generate Air]"..
+			"button_exit[0,4;3,0.7;refill_bottle;refill Air-gasbottle]"..
+			"listring[current_player;main]"
 		)
 		local inv = meta:get_inventory()
 		inv:set_size("main", 4)
-		
-		--for airleak
-		meta:set_int("leak", 0)
 	end,
 	on_receive_fields = function(pos, formname, fields, player)
 		if fields.generate then
 			marsair.use_air_gene(pos, player)
+		elseif fields.refill_bottle then
+			local itemstack = player:get_wielded_item()
+			local name = player:get_player_name()
+			if itemstack:get_name() ~= "spacesuit:air_gasbottle_empty" then
+				minetest.chat_send_player(name, "you need to wield a empty Air-gasbottle!")
+				return
+			end
+			if breathable_gas_refill(pos, node) then
+				itemstack:set_count(itemstack:get_count()-1)
+				player:set_wielded_item(itemstack)
+				player:get_inventory():add_item("main", "spacesuit:air_gasbottle")
+			else
+				minetest.chat_send_player(name, "not enought oxygen to refill (you need 10 inside the Air generator)")
+			end
 		end
 		--print(pos, dump(player), dump(fields))
 	end,
-	 tube = {
+	tube = {
 		insert_object = function(pos, node, stack, direction)
 			local meta = minetest.get_meta(pos)
 			local inv = meta:get_inventory()
@@ -159,6 +191,7 @@ minetest.register_node("marsair:airgen", {
 			marsair.use_air_gene(pos, false)
 		end,
 	}},
+	breathable_gas_refill = breathable_gas_refill
 })
 
 minetest.register_node("marsair:airgen_admin", {
@@ -175,7 +208,7 @@ minetest.register_node("marsair:airgen_admin", {
 				},
 			}
 		},
-	groups = {dig_immediate=3, tubedevice = 1, tubedevice_receiver = 1},
+	groups = {dig_immediate=3, tubedevice = 1, tubedevice_receiver = 1, breathable_gas_refill = 1},
 	sounds = default.node_sound_stone_defaults(),
 	on_rightclick = function(pos, node, player, itemstack, pointed_thing)
 		marsair.spread_air(pos)
@@ -193,4 +226,7 @@ minetest.register_node("marsair:airgen_admin", {
 			return
 		end,
 	}},
+	breathable_gas_refill = function(pos, node)
+		return true
+	end
 })

@@ -196,7 +196,8 @@ minetest.register_node("marsair:airmaker", {
 	},
 	paramtype2 = "facedir",
 	groups = {cracky = 2, tubedevice = 0, tubedevice_sender = 1,
-			soil=3, wet = 2, grassland = 1, field = 1, plant = 1},
+			soil=3, wet = 2, grassland = 1, field = 1, plant = 1,
+		no_oxygen_production = 1},
 	soil = {
 		base = "marsair:airmaker",
 		dry ="marsair:airmaker",

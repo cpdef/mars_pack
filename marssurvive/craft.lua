@@ -86,6 +86,14 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
+	output = "marssurvive:warning 4",
+	recipe = {
+		{"default:coal_lump","cratermg:dust2",""},
+		{"cratermg:dust2","default:coal_lump", ""},
+	}
+})
+
+minetest.register_craft({
 	output = "marssurvive:steelwallblock 8",
 	recipe = {
 		{"default:steel_ingot","default:steel_ingot","default:steel_ingot"},

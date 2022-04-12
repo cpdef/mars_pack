@@ -51,7 +51,6 @@ minetest.register_abm({
 	action = function(pos)
 		local node = minetest.get_node(pos)
 		local under = minetest.get_node({x=pos.x, y=pos.y-1, z=pos.z})
-		print(pos.x, pos.y, pos.z, under.name, node.name)
 		if under.name == "marsair:airmaker" 
 			or minetest.get_item_group(node.name, "no_oxygen_production") > 0 then
 			return

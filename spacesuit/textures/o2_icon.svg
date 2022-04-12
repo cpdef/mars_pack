@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="100mm"
+   height="100mm"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg9446"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="o2_icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview9448"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="true"
+     width="100mm"
+     inkscape:zoom="1.1759259"
+     inkscape:cx="29.338583"
+     inkscape:cy="276.80315"
+     inkscape:window-width="1920"
+     inkscape:window-height="1019"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid9450" />
+  </sodipodi:namedview>
+  <defs
+     id="defs9443">
+    <rect
+       x="140"
+       y="320"
+       width="100"
+       height="80"
+       id="rect13703" />
+  </defs>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <ellipse
+       style="fill:none;stroke:#008eff;stroke-width:3.1;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="path9474"
+       cx="40.353233"
+       cy="56.797638"
+       rx="11.90625"
+       ry="14.552083" />
+    <ellipse
+       style="fill:none;stroke:#008eff;stroke-width:1.57298;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill"
+       id="path9564"
+       cx="56.228233"
+       cy="30.392216"
+       rx="6.6780949"
+       ry="6.7310095" />
+    <ellipse
+       style="fill:none;stroke:#008eff;stroke-width:0.880511;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill"
+       id="path9566"
+       cx="39.030315"
+       cy="20.775444"
+       rx="2.7055779"
+       ry="3.0090218" />
+    <text
+       xml:space="preserve"
+       transform="matrix(1.0410449,0,0,0.8980153,-92.037265,-225.76195)"
+       id="text13701"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.6667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;white-space:pre;shape-inside:url(#rect13703);fill:#008eff;fill-opacity:1;stroke:none"><tspan
+         x="140"
+         y="344.02015"
+         id="tspan29412">2</tspan></text>
+  </g>
+</svg>

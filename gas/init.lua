@@ -62,7 +62,7 @@ function gas.get_name(pos)
 end
 
 function gas.add_concentration(pos, gas_name, value)
-    --print("add")
+    print("add", pos.x, pos.y, pos.z, gas_name, value)
     local node = minetest.get_node(pos)
     if gas.get_name(pos) ~= nil then
         local meta = minetest.get_meta(pos)
